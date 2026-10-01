@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>中文電報碼查詢 · 中國大陸 / 台灣 / 港澳</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%238f3f2b'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle' fill='%23fffaf1' font-family='serif'%3E電%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="中文電報碼（中文商用電碼、CCC）本地查詢：中國大陸《標準電碼本》、台灣中文電碼、港澳銀行業 SWIFT e-CCC 三表對照，漢字與電碼雙向轉換。">
+
+  <!-- 中文自由 webfonts（來自 free-fonts，按 unicode-range 切片，僅按需下載） -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/wenjin-mincho@1.0.1/wenjin-mincho.css">
+  <link rel="stylesheet" href="https://unpkg.com/@free-fonts/tw-sung@1.0.0/tw-sung.css">
+
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f2e8;
+      --paper: #fffaf1;
+      --paper-soft: #f1e7d8;
+      --panel: rgba(255, 250, 241, 0.88);
+      --panel-solid: #fffaf1;
+      --line: rgba(72, 56, 40, 0.18);
+      --line-strong: rgba(72, 56, 40, 0.32);
+      --text: #211b16;
+      --muted: #766c60;
+      --faint: #a2978a;
+      --accent: #8f3f2b;
+      --accent-2: #4d6d62;
+      --danger: #a8443d;
+      --field: rgba(255, 252, 246, 0.92);
+      --card-head: rgba(247, 239, 226, 0.72);
+      --row-alt: rgba(247, 239, 226, 0.42);
+      --button-active-text: #fffaf1;
+      --shadow: 0 18px 50px rgba(51, 35, 20, 0.12);
+      --c-same: #4d6d62;
+      --c-st: #8f6a3f;
+      --c-diff: #8f3f2b;
+      --c-one: #5b6b8f;
+      --c-nh: #7a7068;
+      --han-size: 30px;
+      --wenjin: "WenJin Mincho Plane 0", "WenJin Mincho Plane 2", "WenJin Mincho Plane 3";
+      --serif-tc: "TW-Sung", var(--wenjin), serif;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #171512;
+      --paper: #211d18;
+      --paper-soft: #2b251e;
+      --panel: rgba(33, 29, 24, 0.88);
+      --panel-solid: #211d18;
+      --line: rgba(232, 218, 197, 0.16);
+      --line-strong: rgba(232, 218, 197, 0.28);
+      --text: #f4eadc;
+      --muted: #b8aa98;
+      --faint: #897b6c;
+      --accent: #d08468;
+      --accent-2: #9fc1b2;
+      --danger: #df8f86;
+      --field: rgba(18, 16, 13, 0.82);
+      --card-head: rgba(18, 16, 13, 0.52);
+      --row-alt: rgba(18, 16, 13, 0.24);
+      --button-active-text: #171512;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      --c-same: #7fa797;
+      --c-st: #c09a68;
+      --c-diff: #d08468;
+      --c-one: #8fa0c8;
+      --c-nh: #a89c90;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 16% 12%, rgba(143, 63, 43, 0.10), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--paper-soft));
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.32;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+      z-index: 0;
+    }
+
+    main { max-width: 1080px; margin: 0 auto; padding: 24px; position: relative; z-index: 1; }
+
+    .theme-toggle {
+      width: 36px; height: 36px; display: inline-grid; place-items: center;
+      border: 1px solid var(--line); border-radius: 8px;
+      background: var(--field); color: var(--text);
+      cursor: pointer; font-size: 17px; line-height: 1; flex-shrink: 0;
+    }
+
+    .hero {
+      display: flex; gap: 24px; align-items: flex-start;
+      border-radius: 8px; padding: 34px 32px;
+      background: var(--panel); backdrop-filter: blur(14px);
+      border: 1px solid var(--line); box-shadow: var(--shadow);
+    }
+    .hero-left { flex: 1; min-width: 0; }
+    .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
+
+    .eyebrow {
+      width: fit-content; margin-top: 14px; padding: 4px 10px;
+      border: 1px solid var(--line); border-radius: 999px;
+      color: var(--accent-2); background: var(--field); font-size: 13px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", var(--serif-tc);
+      font-weight: 600; line-height: 1.1;
+      display: flex; flex-direction: column; gap: 0.1em;
+    }
+    .title-kicker { font-size: clamp(15px, 2.2vw, 22px); color: var(--muted); font-weight: 400; }
+    .title-main { font-size: clamp(34px, 5.6vw, 58px); }
+
+    .stat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .stat-chip {
+      display: inline-flex; align-items: baseline; gap: 6px;
+      border: 1px solid var(--line); border-radius: 999px;
+      padding: 6px 12px; background: var(--field); color: var(--text);
+      cursor: pointer; font-size: 13px;
+    }
+    .stat-chip b { font-size: 15px; font-variant-numeric: tabular-nums; }
+    .stat-chip .dot { width: 8px; height: 8px; border-radius: 50%; align-self: center; }
+    .stat-chip.is-active { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--field)); color: var(--accent); }
+
+    .controls {
+      position: sticky; top: 0; z-index: 6;
+      margin-top: 22px; padding: 14px;
+      border: 1px solid var(--line); border-radius: 8px;
+      background: var(--panel); backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(51, 35, 20, 0.08);
+    }
+    .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    .search-wrap { position: relative; flex: 1 1 300px; min-width: 220px; }
+    .search-wrap input {
+      width: 100%; height: 42px;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 40px 8px 14px;
+      background: var(--field); color: var(--text);
+      font: 15px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .search-wrap input:focus { outline: none; border-color: var(--accent); }
+    .search-clear {
+      position: absolute; right: 6px; top: 6px;
+      width: 30px; height: 30px; border: 0; border-radius: 6px;
+      background: transparent; color: var(--muted); cursor: pointer; font-size: 18px;
+    }
+    .search-clear:hover { color: var(--text); }
+    .search-go {
+      height: 42px; padding: 0 18px; border-radius: 8px;
+      border: 1px solid var(--accent); background: var(--accent); color: var(--button-active-text);
+      font: inherit; font-size: 14px; cursor: pointer;
+    }
+    .examples { margin-top: 8px; font-size: 12px; color: var(--faint); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+    .examples button {
+      border: 0; padding: 0; background: none; color: var(--accent-2); cursor: pointer;
+      font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .examples button:hover { text-decoration: underline; }
+
+    .privacy { margin-top: 6px; font-size: 12px; color: var(--accent-2); }
+    label { color: var(--muted); font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+    .field-group { display: inline-flex; align-items: center; gap: 8px; }
+    select {
+      min-height: 40px; border: 1px solid var(--line); border-radius: 8px;
+      padding: 6px 12px; background: var(--field); color: var(--text);
+      font: inherit; font-size: 14px; cursor: pointer;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    .slider-wrap { display: inline-flex; align-items: center; gap: 8px; min-width: 160px; }
+    input[type="range"] { accent-color: var(--accent); }
+
+    /* ---------- conversion panel ---------- */
+    .convert {
+      margin-top: 18px; border: 1px solid var(--line); border-radius: 8px;
+      background: var(--panel-solid); box-shadow: 0 10px 30px rgba(51, 35, 20, 0.06);
+      overflow: clip;
+    }
+    .convert-head {
+      display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;
+      padding: 12px 16px; background: var(--card-head); border-bottom: 1px solid var(--line-strong);
+      font-size: 13px; color: var(--muted);
+    }
+    .convert-head b { color: var(--text); font-weight: 600; }
+    .strings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+    .strings > div { padding: 12px 16px; border-right: 1px solid var(--line); min-width: 0; }
+    .strings > div:last-child { border-right: 0; }
+    .strings .lbl { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 6px; }
+    .strings .val {
+      margin-top: 4px; font: 17px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      word-break: break-word; font-variant-numeric: tabular-nums;
+    }
+    .strings .val.han { font-size: calc(var(--han-size) * 0.8); line-height: 1.3; letter-spacing: 0.04em; }
+    .copy {
+      border: 1px solid var(--line); border-radius: 6px; background: var(--field); color: var(--muted);
+      font-size: 11px; padding: 0 8px; cursor: pointer; line-height: 20px;
+    }
+    .copy:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ---------- tables ---------- */
+    .result-meta { margin: 18px 2px 8px; color: var(--muted); font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .result-meta .warn { color: var(--danger); }
+
+    .table-wrap {
+      border: 1px solid var(--line); border-radius: 8px; overflow: clip;
+      background: var(--panel-solid); box-shadow: 0 10px 30px rgba(51, 35, 20, 0.06);
+    }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    thead th {
+      position: sticky; top: var(--controls-h, 0px); z-index: 3;
+      background: var(--card-head); backdrop-filter: blur(10px);
+      text-align: left; font-weight: 500; font-size: 12px; letter-spacing: 0.04em;
+      color: var(--muted); padding: 11px 12px;
+      border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+    }
+    .convert thead th { position: static; }
+    thead th small { font-weight: 400; color: var(--faint); letter-spacing: 0; }
+    tbody tr { border-bottom: 1px solid var(--line); }
+    tbody tr:last-child { border-bottom: 0; }
+    tbody tr:nth-child(even) { background: var(--row-alt); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    td { padding: 9px 12px; vertical-align: middle; }
+
+    .col-code { width: 92px; }
+    .col-rel { width: 118px; }
+    .code {
+      font: 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums;
+      color: var(--text); text-decoration: none; cursor: pointer; background: none; border: 0; padding: 0;
+    }
+    .code:hover { color: var(--accent); text-decoration: underline; }
+    .code.dim { color: var(--faint); }
+
+    .han:lang(zh-Hans) { font-family: var(--wenjin), "TW-Sung", serif; }
+    .han:lang(zh-Hant) { font-family: var(--serif-tc); }
+    .gc {
+      font-size: var(--han-size); line-height: 1.15;
+      color: var(--text); text-decoration: none; cursor: pointer; background: none; border: 0; padding: 0;
+    }
+    .gc:hover { color: var(--accent); }
+    .empty { color: var(--faint); font-size: 13px; }
+    .nh-tag, .note-tag { display: inline-block; margin-left: 6px; font-size: 11px; color: var(--faint); vertical-align: middle; }
+
+    .rel-badge {
+      font-size: 11px; font-weight: 600; color: var(--button-active-text);
+      border-radius: 4px; padding: 2px 6px; line-height: 1.5; white-space: nowrap;
+    }
+    .rel-badge[data-rel="same"] { background: var(--c-same); }
+    .rel-badge[data-rel="st"] { background: var(--c-st); }
+    .rel-badge[data-rel="diff"] { background: var(--c-diff); }
+    .rel-badge[data-rel="cn"], .rel-badge[data-rel="tw"] { background: var(--c-one); }
+    .rel-badge[data-rel="nh"] { background: var(--c-nh); }
+    .rel-badge[data-rel="sw"] { background: var(--c-nh); }
+
+    /* conversion rows */
+    .cv-input { width: 96px; }
+    .cv-cell { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+    .cv-hit { display: inline-flex; align-items: baseline; gap: 6px; }
+    .cv-hit .gc { font-size: calc(var(--han-size) * 0.75); }
+    .cv-hit.via { opacity: 0.72; }
+    .cv-hit .via-tag { font-size: 11px; color: var(--faint); }
+
+    #sentinel { height: 1px; }
+    .loading { padding: 18px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    /* ---------- background ---------- */
+    .article {
+      margin-top: 40px; padding: 8px 36px 28px;
+      border: 1px solid var(--line); border-radius: 8px;
+      background: var(--panel); backdrop-filter: blur(12px);
+    }
+    .article > * { max-width: 46em; }
+    .article > .overview-wrap, .article > .stat-table { max-width: none; }
+    .bg-title {
+      margin: 24px 0 4px; font-family: Georgia, "Times New Roman", var(--serif-tc);
+      font-size: 28px; font-weight: 600;
+    }
+    .article h3 {
+      margin: 30px 0 10px; padding-top: 18px; border-top: 1px solid var(--line);
+      font-family: Georgia, "Times New Roman", var(--serif-tc); font-size: 20px; font-weight: 600;
+    }
+    .bg-title + h3 { border-top: 0; padding-top: 0; margin-top: 16px; }
+    .article h4 { margin: 22px 0 6px; font-size: 15px; font-weight: 600; color: var(--accent); }
+    .article p, .article li { margin: 8px 0; color: var(--muted); font-size: 14px; line-height: 1.9; }
+    .article ul { margin: 8px 0; padding-left: 22px; }
+    .article .refs li { font-size: 13px; line-height: 1.8; margin: 6px 0; }
+    .article b, .article strong { color: var(--text); font-weight: 600; }
+    .article .han { font-size: 16px; color: var(--text); }
+    .article code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); }
+    .article a { color: var(--accent-2); }
+    .overview-wrap { overflow-x: auto; margin: 12px 0 4px; }
+    .overview { width: 100%; table-layout: auto; font-size: 13px; border: 1px solid var(--line); border-radius: 6px; }
+    .overview th { position: static; background: var(--card-head); backdrop-filter: none; }
+    .overview td { padding: 8px 12px; color: var(--muted); vertical-align: top; }
+    .overview td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+    .timeline { display: grid; grid-template-columns: 88px 1fr; gap: 2px 14px; margin: 8px 0; }
+    .timeline dt { font: 13px/1.8 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); }
+    .timeline dd { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.9; }
+    .stat-table { width: 100%; font-size: 13px; color: var(--muted); table-layout: auto; }
+    .stat-table td { padding: 3px 6px; border-bottom: 1px dashed var(--line); }
+    .stat-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); }
+    .footer { margin: 28px 2px 12px; color: var(--faint); font-size: 12px; line-height: 1.8; }
+    .footer a { color: var(--accent-2); }
+
+    @media (max-width: 720px) {
+      main { padding: 16px; }
+      .article { padding: 4px 18px 20px; }
+      .hero { padding: 24px 20px; flex-direction: column; }
+      .hero-right { align-items: stretch; flex-direction: row; flex-wrap: wrap; gap: 10px; width: 100%; }
+      .field-group, .slider-wrap { flex: 1 1 auto; min-width: 140px; }
+      .field-group select { width: 100%; min-width: 0; }
+      .strings { grid-template-columns: 1fr; }
+      .strings > div { border-right: 0; border-bottom: 1px solid var(--line); }
+      .col-sws { display: none; }
+      .col-rel { width: 84px; }
+      td, thead th { padding: 8px 6px; }
+      .col-code { width: 60px; }
+      .timeline { grid-template-columns: 64px 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="hero-left">
+        <h1>
+          <span class="title-kicker">中文商用電碼 · Chinese Commercial Code</span>
+          <span class="title-main">中文電報碼查詢</span>
+        </h1>
+        <div class="eyebrow">中國大陸《標準電碼本》· 台灣中文電碼 · 港澳銀行 SWIFT e-CCC</div>
+        <div class="stat-chips" id="statChips"></div>
+      </div>
+      <div class="hero-right">
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="切換深淺色">🌙</button>
+        <div class="slider-wrap">
+          <label for="sizeRange">字號</label>
+          <input id="sizeRange" type="range" min="20" max="52" value="30" aria-label="字號">
+        </div>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="controls-row">
+        <div class="search-wrap">
+          <input id="search" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="漢字（陳大文）、電碼（7115 1129 2429）或統一碼（U+9648）">
+          <button type="button" id="searchClear" class="search-clear" aria-label="清除">×</button>
+        </div>
+        <button type="button" id="searchGo" class="search-go">查詢</button>
+      </div>
+      <div class="examples" id="examples">示例：</div>
+      <div class="privacy">🔒 所有轉換均在本地執行，輸入內容不會上傳，保障隱私。</div>
+    </div>
+
+    <section class="convert" id="convert" hidden></section>
+
+    <div class="result-meta">
+      <span id="resultCount"></span>
+      <span id="resultHint"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-code">電碼</th>
+            <th>中國大陸 <small>1983</small></th>
+            <th>台灣</th>
+            <th>SWIFT 繁 <small>港澳</small></th>
+            <th class="col-sws">SWIFT 簡</th>
+            <th class="col-rel">兩岸</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div id="sentinel"></div>
+      <div class="loading" id="loading" hidden>載入中…</div>
+    </div>
+
+    <article class="article">
+      <h2 class="bg-title">背景</h2>
+
+      <h3>什麼是中文電報碼</h3>
+      <p>電報只能傳送數字和拉丁字母，漢字須先查<b>電碼本</b>換成四位數字（0000–9999）再拍發，收報方再按碼譯回漢字。這套四位碼通稱<b>中文電報碼</b>，又稱<b>中文商用電碼</b>（Chinese Commercial Code, CCC）、標準電碼。</p>
+      <p>電報退出日常通信後，四位碼仍留在證件與金融系統裡：<b>香港、澳門身份證</b>在中文姓名下印有電碼；中國大陸居民辦理部分國家簽證、海外匯款填寫收款人中文姓名時，也常被要求填寫電碼，因為拼音只記讀音，不同的字可能拼法相同，電碼則一字一碼，可以分辨（如姓 <span class="han" lang="zh-Hant">張</span>、<span class="han" lang="zh-Hant">章</span>，普通話都拼 Zhang、香港粵語都拼 Cheung，電碼則分別是 1728、4545）。</p>
+
+      <h3>電碼本源流</h3>
+      <dl class="timeline">
+          <dt>1869</dt><dd>丹麥天文學家 Hans Schjellerup 擬出中文電報字典方案，選 5,454 個漢字，逐字配以數字編號。</dd>
+          <dt>1871</dt><dd>丹麥大北電報公司敷設上海—香港海線，電報傳入中國；公司啟用的中文碼本即以 Schjellerup 方案為基礎，收 5,454 字。</dd>
+          <dt>1872–1873</dt><dd>上海海關的法國人威基傑（Septime Auguste Viguier）在此基礎上擴充，參照《康熙字典》部首排列，選常用字六千八百餘，編成《電報新書》，每字配一個四位碼（成書年份，各家記載有 1872、1873 年之別）。</dd>
+          <dt>1880</dt><dd>李鴻章奏設天津電報總局，盛宣懷任總辦；同時開辦天津電報學堂，聘丹麥人博爾森、克利欽生任教。有說法稱二人參與設計電碼，但未見可靠出處。</dd>
+          <dt>1881</dt><dd>首任上海電報局總辦鄭觀應以舊碼本收字不足、排列失序，改編為《中國電報新編》，為清政府電報總局採用。電碼起初用中文數字直行書寫，如 中（〇〇二二）國（〇九四八）。</dd>
+          <dt>1912–1949</dt><dd>民國交通部屢次修訂，先後名為《明密電碼新編》《明密碼電報書》《電碼新編》。1933 年版改用阿拉伯數字，並增設代日碼 9901–9931、代時碼 9801–9824；1937 年版改為橫排。全書約 9,800 字。上海中華書局亦印行《<a href="https://commons.wikimedia.org/wiki/File:NLC416-02jh004786-9308_%E9%9B%BB%E7%A2%BC%E6%96%B0%E7%B7%A8.pdf" target="_blank" rel="noopener">電碼新編</a>》（年份不詳），上編收部首索引、電碼及電碼補遺、韻目代日電碼表、電碼代日代時表、羅馬字母電碼用法，下編為電報營業通則，可見當時電碼本的完整體例（中國國家圖書館藏本，Wikimedia Commons 全書掃描）。</dd>
+          <dt>1937</dt><dd>廈門大學語言學系刊行周辨明編《<a href="https://commons.wikimedia.org/wiki/File:NLC416-07jh011962-5748_%E5%88%9D%E7%89%88%E5%9C%8B%E9%9F%B3%E5%AD%97%E5%BD%99%E5%8F%8A%E9%9B%BB%E7%A2%BC%E6%9B%B8.pdf" target="_blank" rel="noopener">初版國音字彙及電碼書</a>》，收字萬餘，每字註國語羅馬字拼音、舊電報號碼與羅馬字母電碼，可一窺民國電碼的實際面貌（中國國家圖書館藏本，Wikimedia Commons 全書掃描）。</dd>
+        </dl>
+
+      <h3>兩岸四地</h3>
+      <p>1949 年後，電碼本隨政權分途：中國大陸改編《標準電碼本》並改用簡化字，台灣沿用民國舊碼，香港、澳門則各自在舊碼基礎上由政府部門維護。四地現況如下：</p>
+      <div class="overview-wrap">
+        <table class="overview">
+          <thead><tr><th>地區</th><th>現行碼本</th><th>字形</th><th>是否公開</th><th>本頁資料</th></tr></thead>
+          <tbody>
+            <tr><td>中國大陸</td><td>《標準電碼本（修訂本）》，1983</td><td>簡化字</td><td>公開出版</td><td>Unihan <code>kMainlandTelegraph</code></td></tr>
+            <tr><td>台灣</td><td>沿用民國電碼本，略有增補</td><td>繁體</td><td>公開</td><td>Unihan <code>kTaiwanTelegraph</code></td></tr>
+            <tr><td>香港</td><td>入境事務處內部電碼（4 位＋擴展位）</td><td>繁體</td><td>未公開</td><td>無官方資料；可參考 <code>kTaiwanTelegraph</code>，銀行用 SWIFT e-CCC 第二版</td></tr>
+            <tr><td>澳門</td><td>第 88/85/M 號法令附件字音表，1985</td><td>繁體</td><td>刊於《公報》</td><td>無（附件為掃描影像，尚未數字化）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>中國大陸</h4>
+      <p>郵電部先後三次大改電碼本：</p>
+      <ul>
+          <li><b>1952</b> 郵電部《標準電碼本》：部分字由補遺移入正編（如 <span class="han" lang="zh-Hans">她</span> 8282 → 1247），部分字移出正編（<span class="han" lang="zh-Hans">粦</span> 4729 → 9036），補遺基本重排（<span class="han" lang="zh-Hans">垸</span> 9743 → 8219）；新增月份符號、注音、俄文與拉丁字母、標點。</li>
+          <li><b>1958</b> 新收 205 字，填入正編空位（如 0058 <span class="han" lang="zh-Hans">苯</span>）；隨後陸續印入簡化字電碼表。</li>
+          <li><b>1983</b>《標準電碼本（修訂本）》正式改用簡化字，同時大量刪字：繁簡合併（<span class="han" lang="zh-Hant">穀</span> 4474 併入 <span class="han" lang="zh-Hans">谷</span> 6253）、異體（<span class="han" lang="zh-Hant">彿</span> 1765、<span class="han" lang="zh-Hant">髴</span> 7572 併入 <span class="han" lang="zh-Hans">佛</span> 0154）、生僻字 1,681 個；個別碼位改填他字（0161 <span class="han" lang="zh-Hant">佪</span> → <span class="han" lang="zh-Hans">伢</span>）。</li>
+        </ul>
+      <p>結果兩岸同一碼位多數為同字或繁簡對應，但也有數百個碼位彼此是不相干的字——見上方「兩岸異字」。</p>
+
+      <h4>台灣</h4>
+      <p>基本沿用民國舊碼（0000–9763、代時碼 9801–9824、代日碼 9901–9931），只在 9764–9798 補入少量漢字，在 9851–9862 補標點、9871–9896 補拉丁字母。</p>
+
+      <h4>香港</h4>
+      <p>香港沒有公開的電碼表。<b>入境事務處</b>在內部維護一套電碼：據數字政策辦公室（前資訊科技總監辦公室）《Common Schema for Person Name》（CSTF Paper 2003/01），入境處系統以電碼而非漢字儲存中文姓名（至多 6 字）；每個字由 <b>4 位數字加 1 位可選擴展位</b>組成，擴展位用於區分同碼下的不同字形（少數情況下區分同碼的不同字），<b>身份證上只印前 4 位</b>。同一標準的 XSD 註明不附碼表（“No code lists are associated with this schema”）。智能身份證晶片內則以 ISO 10646 儲存姓名，另加一字節標示字形。</p>
+      <p>這套碼屬繁體舊碼一系，常見姓氏如 <span class="han" lang="zh-Hant-HK">陳</span> 7115、<span class="han" lang="zh-Hant-HK">李</span> 2621、<span class="han" lang="zh-Hant-HK">黃</span> 7806、<span class="han" lang="zh-Hant-HK">張</span> 1728 與台灣碼相同，因此<b>查身份證電碼可先看「台灣」欄</b>；罕用字、本地字及字形擴展位，以入境處記錄為準。香港本地刊行過的碼本有 1972 年香港商務印書館《新編標準電碼本》，以及 1971 年皇家香港警察政治部為政府內部編制的《三用中文電報碼本》（Three Way Chinese Commercial/Telegraphic Code Book，附國語、粵語拼音，1989 年再版），均未見數字化。網上自稱「香港身份證電碼」的查詢網站，所用資料實為 Unicode 台灣碼。</p>
+
+      <h4>澳門</h4>
+      <p>澳門的電碼表是<b>法律附件</b>。1985 年 10 月 11 日刊於《澳門政府公報》第 40 期的<b>第 88/85/M 號法令</b>（<a href="https://bo.dsaj.gov.mo/bo/i/85/40/declei88_cn.asp" target="_blank" rel="noopener">中文本</a>、<a href="https://bo.dsaj.gov.mo/bo/i/85/40/declei88.asp" target="_blank" rel="noopener">葡文本</a>）「核准本法令附件關于附有密碼及廣州音譯音之字音表」，葡文稱 <i>silabário codificado de romanização do cantonense</i>。法令規定一切官方文件須使用表中所定的羅馬拼音——澳門證件上葡式粵語拼法（如 <span class="han" lang="zh-Hant">陳</span> CHAN）即源於此；字表的增補與修訂，由行政公職局建議、以行政長官批示刊登於《公報》。法令自 1986 年 1 月 1 日生效，2024 年經第 26/2024 號及第 11/2024 號法律適應化處理及修改，至今有效。</p>
+      <p><a href="https://images.bo.dsaj.gov.mo//bo/i/85/40/dl-88-1985-an.pdf" target="_blank" rel="noopener">附件</a>為 226 頁手冊，分部首索引、依葡文字母次序索引、電碼對照、依葡文字母次序拼音、複姓、依電碼次序檢字六部分；最後一部分按 0000–9999 逐格列出手寫字形、電碼與拼音。抽查所見與台灣碼大致相同（如 7115 <span class="han" lang="zh-Hant">陳</span>、7193 <span class="han" lang="zh-Hant">電</span>），台灣在 9700 段的字亦見於澳門表（如 9701 <span class="han" lang="zh-Hant">硅</span>、9729 <span class="han" lang="zh-Hant">吔</span>、9731 <span class="han" lang="zh-Hant">咪</span>），個別碼位留空（如 9753，台灣為 <span class="han" lang="zh-Hant">烯</span>）。附件為無文字層的掃描影像，本頁尚未收入。</p>
+
+      <h4>港澳銀行：SWIFT e-CCC</h4>
+      <p>跨境匯款報文（SWIFT）以電碼傳中文姓名。銀行界歷來混用香港商務 1972 版與人民郵電 1983 版，2014 年成立的 CCC 維護小組（CCC Maintenance Group）彙編了 <b>e-CCC 第二版</b>：每個碼位並列簡體、繁體兩字，<b>以 1983 年中國大陸版為對齊基準</b>，繁簡對不上時把簡體字挪到空碼。因此表中「SWIFT 繁」一欄<b>不等於</b> 1972 年香港版原貌，與台灣碼有約兩千處出入，其中不少是向中國大陸碼位看齊所致。本頁列出它，是因為它是港澳銀行實際使用、可公開取得的版本。表中注「無法錄入」者，是該字 2014 年無法在電腦上輸入而留空。</p>
+
+      <h3>實例：5831 與 7016</h3>
+      <p><b>5831</b>：台灣為 <span class="han" lang="zh-Hant">螿</span>（U+87BF）。中國大陸 1983 版此碼空缺——簡化字 <span class="han" lang="zh-Hans">螀</span>（U+8780）在 Unicode 資料裡沒有任何電碼，應是修訂時刪去；SWIFT 表簡體一側亦空。</p>
+        <p><b>7016</b>：台灣為 <span class="han" lang="zh-Hant">鑱</span>（U+9471），中國大陸為類推簡化的 <span class="han" lang="zh-Hans">𰾠</span>（U+30FA0，擴展 G 區）。後者直到 2020 年才編入 Unicode，SWIFT 表因此注「簡體無法錄入」。一般繁簡轉換把 <span class="han" lang="zh-Hant">鑱</span> 轉成 <span class="han" lang="zh-Hans">镵</span>（U+9575），但電碼本用的是 <span class="han" lang="zh-Hans">𰾠</span>——跨區對照應以碼位為準，不能只靠繁簡轉換。</p>
+
+      <h3>本頁資料與統計</h3>
+      <table class="stat-table" id="statTable"></table>
+      <p style="margin-top:10px">「兩岸」一欄比較同一碼位上中國大陸與台灣的字：<span class="rel-badge" data-rel="same">同字</span> 字形完全相同；<span class="rel-badge" data-rel="st">繁簡</span> 互為繁簡或地區異體（依 Unicode 繁簡變體、OpenCC 字表及 SWIFT 表的繁簡配對）；<span class="rel-badge" data-rel="diff">異字</span> 兩字無對應關係；<span class="rel-badge" data-rel="cn">僅中國大陸</span> <span class="rel-badge" data-rel="tw">僅台灣</span> 僅一方有字；<span class="rel-badge" data-rel="nh">非漢字</span> 字母、注音、標點、月份與日時符號。</p>
+        <p>查詢漢字時，若某地碼表沒有這個字，會先做繁簡轉換，找出該地的寫法與電碼（淺色並標「轉換結果」）；繁簡資料也無對應時，列出其他碼表所給碼位上該地的字（標「同碼」，如 <span class="han" lang="zh-Hant">鑱</span> 7016 ↔ 中國大陸 <span class="han" lang="zh-Hans">𰾠</span>）；查詢電碼時直接列出三表在該碼位上的字。全部資料隨頁面載入，<b>所有轉換均在瀏覽器本地執行</b>，輸入的姓名與電碼不會傳送到任何伺服器。</p>
+
+      <h3>參考資料</h3>
+      <ul class="refs">
+        <li>NJStar 南極星：<a href="https://www.njstar.com/cms/chinese-commercial-telegraph-code-lookup" target="_blank" rel="noopener">Chinese Commercial/Telegraphic Code Lookup 中文電碼查詢</a>；
+          <a href="https://www.njstar.com/tools/telecode/telecode-history-cn.htm" target="_blank" rel="noopener">電碼本的編制及其歷次變動概況</a>（選自《怎樣使用〈標準電碼本（修訂本）〉》）；
+          Jaemin Chung, <a href="https://www.njstar.com/tools/telecode/telecode-history.htm" target="_blank" rel="noopener">Brief History of Mainland China's Telegraph Code</a>（2019）；
+          <a href="https://www.njstar.com/tools/telecode/Chinese-Telegraph-Code-Book.php" target="_blank" rel="noopener">中國大陸電碼表</a>、<a href="https://www.njstar.com/tools/telecode/Chinese-Telegraph-Code-Book.php?TW=1" target="_blank" rel="noopener">台灣電碼表</a>；
+          <a href="https://www.njstar.com/tools/telecode/jim-reeds-ctc.htm" target="_blank" rel="noopener">Jim Reeds' CTC page</a>。</li>
+        <li>維基百科：<a href="https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E6%96%87%E7%94%B5%E7%A0%81" target="_blank" rel="noopener">中文電碼</a>；英文維基 <a href="https://en.wikipedia.org/wiki/Chinese_telegraph_code" target="_blank" rel="noopener">Chinese telegraph code</a>、<a href="https://en.wikipedia.org/wiki/Hans_Schjellerup" target="_blank" rel="noopener">Hans Schjellerup</a>。</li>
+        <li>Unicode：<a href="https://www.unicode.org/reports/tr38/" target="_blank" rel="noopener">UAX #38 Unicode Han Database (Unihan)</a>，<code>kMainlandTelegraph</code>、<code>kTaiwanTelegraph</code>。</li>
+        <li>SWIFT / PMPG：<a href="https://www.swift.com/sites/default/files/files/market-practice-guidelines-for-the-adoption-of-chinese-commercial-code.pdf" target="_blank" rel="noopener">Market Practice Guidelines for the Adoption of Chinese Commercial Code</a>（2025）；e-CCC 第二版碼表。</li>
+        <li>香港特區政府數字政策辦公室：<a href="https://www.digitalpolicy.gov.hk/en/our_work/data_governance/policies_standards/interoperability_framework/common_schemas/doc/person_name_cstf_200301.pdf" target="_blank" rel="noopener">Common Schema for Person Name（CSTF Paper 2003/01）</a>；<a href="https://www.digitalpolicy.gov.hk/en/our_work/data_governance/policies_standards/interoperability_framework/common_schemas/person_chinese_name/index.html" target="_blank" rel="noopener">Person Chinese Name 通用資料綱要</a>。</li>
+        <li>澳門：<a href="https://bo.dsaj.gov.mo/bo/i/85/40/declei88_cn.asp" target="_blank" rel="noopener">第 88/85/M 號法令</a>及<a href="https://images.bo.dsaj.gov.mo//bo/i/85/40/dl-88-1985-an.pdf" target="_blank" rel="noopener">附件字音表</a>（《澳門政府公報》1985 年第 40 期）。</li>
+        <li>中國國家圖書館藏民國電碼本（Wikimedia Commons）：<a href="https://commons.wikimedia.org/wiki/File:NLC416-02jh004786-9308_%E9%9B%BB%E7%A2%BC%E6%96%B0%E7%B7%A8.pdf" target="_blank" rel="noopener">《電碼新編》</a>（上海中華書局）；<a href="https://commons.wikimedia.org/wiki/File:NLC416-07jh011962-5748_%E5%88%9D%E7%89%88%E5%9C%8B%E9%9F%B3%E5%AD%97%E5%BD%99%E5%8F%8A%E9%9B%BB%E7%A2%BC%E6%9B%B8.pdf" target="_blank" rel="noopener">《初版國音字彙及電碼書》</a>（周辨明編，1937）。</li>
+        <li><a href="https://github.com/BYVoid/OpenCC" target="_blank" rel="noopener">OpenCC</a> 繁簡轉換字表。</li>
+      </ul>
+    </article>
+
+    <p class="footer">
+      資料來源：中國大陸、台灣漢字電碼取自 Unicode <a href="https://www.unicode.org/reports/tr38/" target="_blank" rel="noopener">Unihan</a> 資料庫 <code>kMainlandTelegraph</code> / <code>kTaiwanTelegraph</code>（Unicode <span id="uniVer"></span>）；非漢字電碼取自 <a href="https://www.njstar.com/cms/chinese-commercial-telegraph-code-lookup" target="_blank" rel="noopener">NJStar 電報碼查詢</a>碼表（Jaemin Chung 整理），沿革亦參考其《電碼本的編制及其歷次變動概況》（選自《怎樣使用〈標準電碼本（修訂本）〉》）。SWIFT 碼表取自 SWIFT《Chinese Commercial Code (e-CCC) 第二版》及 PMPG《Market Practice Guidelines for the Adoption of Chinese Commercial Code》（2025）。香港身份證電碼說明依據香港特區政府數字政策辦公室 CSTF Paper 2003/01 與 Person Chinese Name 通用資料綱要。澳門電碼說明依據《澳門特別行政區公報》第 88/85/M 號法令及其附件。繁簡對應依 Unihan 與 <a href="https://github.com/BYVoid/OpenCC" target="_blank" rel="noopener">OpenCC</a>。字體由 <a href="https://free-fonts.digitalhumanities.dev/" target="_blank" rel="noopener">free-fonts</a> 提供：簡體用文津明體，繁體用全字庫正宋體，缺字時互相回退。
+    </p>
+  </main>
+
+  <script src="./data.js"></script>
+  <script>
+    const D = window.TELECODE;
+    const REGIONS = ["cn", "tw", "sw"];
+    const REGION_LABEL = { cn: "中國大陸", tw: "台灣", sw: "SWIFT（港澳）" };
+    const REL = {
+      same: { label: "同字", long: "兩岸同字" },
+      st:   { label: "繁簡", long: "繁簡對應" },
+      diff: { label: "異字", long: "兩岸異字" },
+      cn:   { label: "僅中國大陸", long: "僅中國大陸有字" },
+      tw:   { label: "僅台灣", long: "僅台灣有字" },
+      nh:   { label: "非漢字", long: "非漢字" },
+      sw:   { label: "僅SWIFT", long: "僅 SWIFT 有字" },
+    };
+    const CHIP_ORDER = ["same", "st", "diff", "cn", "tw", "nh"];
+    const EXAMPLES = ["陳大文", "7115 1129 2429", "国语", "5831", "7016", "U+9673", "毛泽东", "0022 0948"];
+
+    // ---------- helpers ----------
+    const $ = (sel) => document.querySelector(sel);
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+    function fmtCp(ch) { return "U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0"); }
+    const pad4 = (n) => String(n).padStart(4, "0");
+    const LANG = { cn: "zh-Hans", tw: "zh-Hant-TW", sws: "zh-Hans", swt: "zh-Hant-HK" };
+
+    // ---------- indices ----------
+    const NH = { cn: new Set(D.nh.cn), tw: new Set(D.nh.tw) };
+    // Char at a code for each column; SWIFT has a simplified and a traditional side.
+    function at(code) {
+      const sw = D.sw[code] || ["", ""];
+      return { cn: D.cn[code] || "", tw: D.tw[code] || "", sws: sw[0], swt: sw[1], swNote: sw[2] || "" };
+    }
+    // char -> {cn:[codes], tw:[codes], sw:[codes]}
+    const byChar = new Map();
+    function addIdx(ch, region, code) {
+      if (!ch) return;
+      if (!byChar.has(ch)) byChar.set(ch, { cn: [], tw: [], sw: [] });
+      const list = byChar.get(ch)[region];
+      if (!list.includes(code)) list.push(code);
+    }
+    for (const [code, ch] of Object.entries(D.cn)) addIdx(ch, "cn", code);
+    for (const [code, ch] of Object.entries(D.tw)) addIdx(ch, "tw", code);
+    for (const [code, [s, t]] of Object.entries(D.sw)) { addIdx(t, "sw", code); addIdx(s, "sw", code); }
+
+    function related(a, b) { return (D.v[a] || "").includes(b) || (D.v[b] || "").includes(a); }
+    function relOf(code) {
+      const a = D.cn[code], b = D.tw[code];
+      if (NH.cn.has(code) || NH.tw.has(code)) return "nh";
+      if (a && b) return a === b ? "same" : related(a, b) ? "st" : "diff";
+      if (a) return "cn";
+      if (b) return "tw";
+      return "sw";
+    }
+
+    const ALL = [];
+    const REL_COUNT = {};
+    for (let i = 0; i < 10000; i++) {
+      const code = pad4(i);
+      if (!D.cn[code] && !D.tw[code] && !D.sw[code]) continue;
+      const rel = relOf(code);
+      REL_COUNT[rel] = (REL_COUNT[rel] || 0) + 1;
+      ALL.push({ code, rel });
+    }
+
+    // ---------- state ----------
+    const state = { query: "", rel: "", size: 30, theme: "light" };
+    let draftQuery = "";
+    let filtered = ALL;
+    let rendered = 0;
+    const BATCH = 120;
+
+    // ---------- query parsing ----------
+    // {kind:'all'} | {kind:'codes', codes:[...]} | {kind:'chars', chars:[...]}
+    function parseQuery(q) {
+      const t = q.trim();
+      if (!t) return { kind: "all" };
+      if (/^[\d\s,，、;；\-/]+$/.test(t)) {
+        const codes = [];
+        for (const tok of t.split(/[\s,，、;；\-/]+/).filter(Boolean)) {
+          if (tok.length <= 4) codes.push(pad4(tok));
+          else if (tok.length % 4 === 0) for (let i = 0; i < tok.length; i += 4) codes.push(tok.slice(i, i + 4));
+          else return { kind: "bad", msg: `「${tok}」不是四位一組的電碼` };
+        }
+        return { kind: "codes", codes };
+      }
+      const chars = [];
+      for (const tok of t.split(/\s+/)) {
+        const m = /^(?:u\+|0x|\\u)([0-9a-f]{4,6})$/i.exec(tok);
+        if (m) { chars.push(String.fromCodePoint(parseInt(m[1], 16))); continue; }
+        chars.push(...Array.from(tok));
+      }
+      return { kind: "chars", chars };
+    }
+
+    // For a char, codes in a region: direct hits, else via S/T variants.
+    function lookup(ch, region) {
+      const direct = byChar.get(ch)?.[region] || [];
+      if (direct.length) return direct.map(code => ({ code, ch, via: false }));
+      const out = [];
+      for (const v of Array.from(D.v[ch] || "")) {
+        for (const code of byChar.get(v)?.[region] || []) out.push({ code, ch: v, via: true });
+      }
+      return out;
+    }
+
+    function swChar(code, prefer) {
+      const a = at(code);
+      return prefer === "s" ? (a.sws || a.swt) : (a.swt || a.sws);
+    }
+
+    // ---------- rendering: conversion panel ----------
+    function charBtn(ch, langKey, cls = "") {
+      return `<button type="button" class="gc han ${cls}" lang="${LANG[langKey]}" data-q="${esc(ch)}" title="${esc(fmtCp(ch))}">${esc(ch)}</button>`;
+    }
+    function codeBtn(code, cls = "") {
+      return `<button type="button" class="code ${cls}" data-q="${code}">${code}</button>`;
+    }
+    function copyBtn(text) {
+      return `<button type="button" class="copy" data-copy="${esc(text)}">複製</button>`;
+    }
+
+    function renderConvert(pq) {
+      const box = $("#convert");
+      if (pq.kind !== "chars" && pq.kind !== "codes") { box.hidden = true; box.innerHTML = ""; return; }
+      box.hidden = false;
+      let head, rows, strings;
+      if (pq.kind === "chars") {
+        const res = pq.chars.map(ch => ({ ch, hits: Object.fromEntries(REGIONS.map(r => [r, lookup(ch, r)])) }));
+        strings = REGIONS.map(r => res.map(x => x.hits[r][0]?.code || "????").join(" "));
+        head = `<b>漢字 → 電碼</b><span>共 ${pq.chars.length} 字 · 「轉換結果」：該地碼表沒有輸入的字形，經繁簡轉換後查得；「同碼」：繁簡資料無對應，僅列同一碼位上該地的字，供參考</span>`;
+        rows = res.map(({ ch, hits }) => {
+          const cells = REGIONS.map(r => {
+            const h = hits[r];
+            if (!h.length) {
+              // Not in this table even via S/T variants: show what this table holds
+              // at the codes the other tables assign (e.g. 鑱 7016 ↔ 中國大陸 𰾠).
+              const same = [...new Set(REGIONS.filter(o => o !== r).flatMap(o => hits[o].filter(x => !x.via).map(x => x.code)))]
+                .map(code => ({ code, ch: r === "sw" ? swChar(code, "t") : at(code)[r] })).filter(x => x.ch);
+              if (!same.length) return `<td><span class="empty">無</span></td>`;
+              return `<td><div class="cv-cell">${same.map(x =>
+                `<span class="cv-hit via" title="該地碼表無「${esc(ch)}」，同一碼位上的字是「${esc(x.ch)}」">${codeBtn(x.code)}${charBtn(x.ch, r === "sw" ? "swt" : r)}<span class="via-tag">同碼</span></span>`
+              ).join("")}</div></td>`;
+            }
+            const lk = r === "sw" ? "swt" : r;
+            return `<td><div class="cv-cell">${h.map(x => {
+              const a = at(x.code);
+              const shown = r === "sw" ? (x.ch === a.sws && a.sws !== a.swt ? a.sws : a.swt || a.sws) : x.ch;
+              const langKey = r === "sw" ? (shown === a.sws && a.sws !== a.swt ? "sws" : "swt") : lk;
+              return `<span class="cv-hit${x.via ? " via" : ""}">${codeBtn(x.code)}${x.via || shown !== ch ? charBtn(shown, langKey) : ""}${x.via ? '<span class="via-tag">轉換結果</span>' : ""}</span>`;
+            }).join("")}</div></td>`;
+          }).join("");
+          return `<tr><td class="cv-input">${charBtn(ch, "tw")}</td>${cells}</tr>`;
+        }).join("");
+      } else {
+        strings = [
+          pq.codes.map(c => at(c).cn || "□").join(""),
+          pq.codes.map(c => at(c).tw || "□").join(""),
+          pq.codes.map(c => swChar(c, "t") || "□").join(""),
+        ];
+        head = `<b>電碼 → 漢字</b><span>共 ${pq.codes.length} 碼 · □ 表示該碼位無字</span>`;
+        rows = pq.codes.map(code => {
+          const a = at(code);
+          const cell = (ch, lk, extra = "") => `<td>${ch ? charBtn(ch, lk) + extra : '<span class="empty">空碼</span>'}</td>`;
+          const swExtra = (a.sws && a.swt && a.sws !== a.swt ? ` <span class="note-tag">簡</span>${charBtn(a.sws, "sws")}` : "")
+            + (a.swNote ? `<span class="note-tag">${esc(a.swNote)}</span>` : "");
+          return `<tr><td class="cv-input">${codeBtn(code)}</td>${cell(a.cn, "cn")}${cell(a.tw, "tw")}${cell(a.swt || a.sws, a.swt ? "swt" : "sws", swExtra)}</tr>`;
+        }).join("");
+      }
+      const isHan = pq.kind === "codes";
+      box.innerHTML = `
+        <div class="convert-head">${head}</div>
+        <div class="strings">${REGIONS.map((r, i) => `
+          <div><div class="lbl"><span>${REGION_LABEL[r]}</span>${copyBtn(strings[i])}</div>
+          <div class="val${isHan ? " han" : ""}" ${isHan ? `lang="${LANG[r === "sw" ? "swt" : r]}"` : ""}>${esc(strings[i])}</div></div>`).join("")}
+        </div>
+        <table>
+          <thead><tr><th class="cv-input">${pq.kind === "chars" ? "字" : "電碼"}</th><th>中國大陸</th><th>台灣</th><th>SWIFT（港澳）</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+
+    // ---------- rendering: code table ----------
+    function applyFilters() {
+      const pq = parseQuery(state.query);
+      renderConvert(pq);
+      let codes = null;
+      if (pq.kind === "codes") codes = new Set(pq.codes);
+      else if (pq.kind === "chars") {
+        codes = new Set();
+        for (const ch of pq.chars) for (const r of REGIONS) for (const x of lookup(ch, r)) codes.add(x.code);
+      }
+      filtered = ALL.filter(r => (!state.rel || r.rel === state.rel) && (!codes || codes.has(r.code)));
+      rendered = 0;
+      $("#tbody").innerHTML = "";
+      renderMore();
+      updateMeta(pq);
+    }
+
+    function updateMeta(pq) {
+      const n = filtered.length;
+      const relDesc = state.rel ? ` · ${REL[state.rel].long}` : "";
+      $("#resultCount").innerHTML = pq.kind === "bad"
+        ? `<span class="warn">${esc(pq.msg)}</span>`
+        : `碼位 <b>${n.toLocaleString()}</b> 個${relDesc}`;
+      $("#resultHint").innerHTML = n === 0 && pq.kind !== "bad"
+        ? '<span class="warn">沒有匹配的碼位。</span>'
+        : (state.query ? "下表列出相關碼位在三表中的字" : "向下滾動瀏覽全部碼位 · 按 / 聚焦搜索框");
+    }
+
+    function rowHtml(r) {
+      const a = at(r.code);
+      const cell = (ch, lk, tag = "") => ch ? `<td>${charBtn(ch, lk)}${tag}</td>` : `<td><span class="empty">—</span></td>`;
+      const nhTag = (region) => NH[region].has(r.code) ? '<span class="nh-tag">非漢字</span>' : "";
+      const swNote = a.swNote ? `<span class="note-tag">${esc(a.swNote)}</span>` : "";
+      return `<tr>
+        <td class="col-code">${codeBtn(r.code)}</td>
+        ${cell(a.cn, "cn", nhTag("cn"))}
+        ${cell(a.tw, "tw", nhTag("tw"))}
+        ${a.swt ? cell(a.swt, "swt", a.sws ? "" : swNote) : `<td><span class="empty">—</span>${a.sws ? swNote : ""}</td>`}
+        <td class="col-sws">${a.sws ? charBtn(a.sws, "sws") : '<span class="empty">—</span>'}${a.sws && !a.swt ? "" : ""}</td>
+        <td class="col-rel"><span class="rel-badge" data-rel="${r.rel}">${REL[r.rel].label}</span></td>
+      </tr>`;
+    }
+
+    function renderMore() {
+      if (rendered >= filtered.length) { $("#loading").hidden = true; return; }
+      const slice = filtered.slice(rendered, rendered + BATCH);
+      $("#tbody").insertAdjacentHTML("beforeend", slice.map(rowHtml).join(""));
+      rendered += slice.length;
+      $("#loading").hidden = rendered >= filtered.length;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) renderMore();
+    }, { rootMargin: "600px" });
+    io.observe($("#sentinel"));
+
+    // ---------- stats ----------
+    function renderStatChips() {
+      const chips = [{ rel: "", label: "全部碼位", count: ALL.length }]
+        .concat(CHIP_ORDER.map(k => ({ rel: k, label: REL[k].long, count: REL_COUNT[k] || 0 })));
+      $("#statChips").innerHTML = chips.map(c =>
+        `<button type="button" class="stat-chip${state.rel === c.rel ? " is-active" : ""}" data-rel="${c.rel}">${c.rel ? `<span class="dot" style="background:var(--c-${c.rel === "cn" || c.rel === "tw" ? "one" : c.rel})"></span>` : ""}${esc(c.label)} <b>${c.count.toLocaleString()}</b></button>`
+      ).join("");
+    }
+    function renderStatTable() {
+      const c = D.meta.counts;
+      const swStats = { both: 0, sOnly: 0, tOnly: 0, eqTw: 0 };
+      for (const [code, [s, t]] of Object.entries(D.sw)) {
+        if (s && t) swStats.both++; else if (s) swStats.sOnly++; else swStats.tOnly++;
+        if (t && t === D.tw[code]) swStats.eqTw++;
+      }
+      const rows = [
+        ["中國大陸碼表：漢字碼位（Unihan kMainlandTelegraph）", c.cnHan],
+        ["中國大陸碼表：非漢字碼位（月份、注音、俄文與拉丁字母、標點等）", c.cn - c.cnHan],
+        ["台灣碼表：漢字碼位（Unihan kTaiwanTelegraph；塵、萼 各佔兩碼）", c.twHan],
+        ["台灣碼表：非漢字碼位（日時符號、標點、拉丁字母）", c.tw - c.twHan],
+        ["SWIFT e-CCC 第二版：有字碼位", c.sw],
+        ["SWIFT：繁體字與台灣碼同一碼位同字", swStats.eqTw],
+        ["兩岸同碼同字 / 繁簡對應 / 異字", [REL_COUNT.same, REL_COUNT.st, REL_COUNT.diff].map(n => n.toLocaleString()).join(" / ")],
+        ["僅中國大陸有字 / 僅台灣有字", [REL_COUNT.cn, REL_COUNT.tw].map(n => n.toLocaleString()).join(" / ")],
+      ];
+      $("#statTable").innerHTML = rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${typeof v === "number" ? v.toLocaleString() : esc(v)}</td></tr>`).join("");
+      $("#uniVer").textContent = D.meta.unicode;
+    }
+
+    // ---------- font / theme / size ----------
+    function applySize() { document.documentElement.style.setProperty("--han-size", state.size + "px"); }
+    function applyTheme() {
+      document.documentElement.dataset.theme = state.theme;
+      $("#themeToggle").textContent = state.theme === "dark" ? "☀" : "🌙";
+    }
+
+    function refreshUI() {
+      $("#search").value = draftQuery;
+      $("#sizeRange").value = state.size;
+      renderStatChips();
+    }
+    function commit() { applyFilters(); refreshUI(); syncHash(true); }
+
+    // ---------- URL hash ----------
+    function syncHash(push = false) {
+      const p = new URLSearchParams();
+      if (state.query) p.set("q", state.query);
+      if (state.rel) p.set("rel", state.rel);
+      if (state.theme !== "light") p.set("th", state.theme);
+      const url = p.toString() ? "#" + p.toString() : location.pathname;
+      if (push) history.pushState(null, "", url);
+      else history.replaceState(null, "", url);
+    }
+    function readHash() {
+      const p = new URLSearchParams(location.hash.slice(1));
+      state.query = p.get("q") || "";
+      draftQuery = state.query;
+      state.rel = REL[p.get("rel")] ? p.get("rel") : "";
+      state.theme = p.get("th") === "dark" ? "dark" : "light";
+    }
+
+    function setQuery(q) { draftQuery = q; state.query = q; commit(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+    function commitSearch() { if (state.query !== draftQuery) { state.query = draftQuery; commit(); } }
+
+    // ---------- wire up ----------
+    function initControls() {
+      $("#examples").insertAdjacentHTML("beforeend", EXAMPLES.map(e => `<button type="button" data-q="${esc(e)}">${esc(e)}</button>`).join(""));
+      refreshUI();
+
+      $("#search").addEventListener("input", (e) => { draftQuery = e.target.value; });
+      $("#search").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); commitSearch(); }
+      });
+      $("#searchGo").addEventListener("click", commitSearch);
+      $("#searchClear").addEventListener("click", () => { setQuery(""); $("#search").focus(); });
+      $("#sizeRange").addEventListener("input", (e) => { state.size = Number(e.target.value); applySize(); });
+      $("#statChips").addEventListener("click", (e) => {
+        const btn = e.target.closest(".stat-chip"); if (!btn) return;
+        state.rel = btn.dataset.rel; commit();
+      });
+      $("#themeToggle").addEventListener("click", () => {
+        state.theme = state.theme === "dark" ? "light" : "dark"; applyTheme(); syncHash();
+      });
+      document.addEventListener("click", (e) => {
+        const cp = e.target.closest("[data-copy]");
+        if (cp) {
+          navigator.clipboard?.writeText(cp.dataset.copy).then(() => {
+            cp.textContent = "已複製"; setTimeout(() => { cp.textContent = "複製"; }, 1200);
+          });
+          return;
+        }
+        const q = e.target.closest("[data-q]");
+        if (q) setQuery(q.dataset.q);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "/" && document.activeElement !== $("#search")) { e.preventDefault(); $("#search").focus(); }
+      });
+    }
+
+    // ---------- boot ----------
+    function onNavigation() {
+      readHash();
+      applySize(); applyTheme();
+      applyFilters(); refreshUI();
+    }
+    window.addEventListener("popstate", onNavigation);
+    readHash();
+    initControls();
+    (() => {
+      const ctrl = $(".controls");
+      const update = () => {
+        const mt = parseFloat(getComputedStyle(ctrl).marginTop) || 0;
+        document.documentElement.style.setProperty("--controls-h", (ctrl.offsetHeight + mt) + "px");
+      };
+      new ResizeObserver(update).observe(ctrl);
+      update();
+    })();
+    renderStatTable();
+    applySize(); applyTheme();
+    applyFilters();
+  </script>
+</body>
+</html>

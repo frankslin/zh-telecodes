@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cct="http://www.xml.gov.hk/schemas/cct" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:import namespace="http://www.xml.gov.hk/schemas/cct" schemaLocation="https://www.digitalpolicy.gov.hk/en/our_work/data_governance/policies_standards/interoperability_framework/doc/cct/cct.xsd"/>
+	<xs:complexType name="PersonChineseNameDetails.V1.0.CT">
+		<xs:annotation>
+			<xs:documentation>UID = COM000016, Dictionary Entry Name = Person Chinese Name. Details,
+			The name of a person in Chinese, optionally with Chinese Commercial Code (CCC).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="PersonChineseNameName.V1.0.CT"/>
+			<xs:element name="ChineseCommercialCode" type="ChineseCommercialCodeDetails.V1.0.CT" minOccurs="0" maxOccurs="6"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PersonChineseNameName.V1.0.CT">
+		<xs:annotation>
+			<xs:documentation>UID = COM000017, Dictionary Entry Name = Person Chinese Name. Name,
+			The name of a person in Chinese.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="cct:Name.CT">
+				<xs:maxLength value="6"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ChineseCommercialCodeDetails.V1.0.CT">
+		<xs:annotation>
+			<xs:documentation>UID = COM000019, Dictionary Entry Name = Chinese Commercial Code. Details,
+			4-digit Chinese Commercial Code (CCC) printed on the HKID Card and optional 1-digit extension</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FourDigitCode" type="ChineseCommercialCodeFourDigitCodeText.V1.0.CT"/>
+			<xs:element name="ExtensionNumber" type="ChineseCommercialCodeExtensionNumberText.V1.0.CT" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChineseCommercialCodeFourDigitCodeText.V1.0.CT">
+		<xs:annotation>
+			<xs:documentation>UID = COM000020, Dictionary Entry Name = Chinese Commercial Code. Four Digit Code. Text,
+			4-digit Chinese Commercial Code (CCC) printed on the HKID Card</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="cct:Text.CT">
+				<xs:pattern value="[0-9]{4}"/>
+				<xs:length value="4"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ChineseCommercialCodeExtensionNumberText.V1.0.CT">
+		<xs:annotation>
+			<xs:documentation>UID = COM000021, Dictionary Entry Name = Chinese Commercial Code. Extension Number. Text,
+			Optional 1-digit extension of the Chinese Commercial Code (CCC).  In some cases, a Chinese character may be written in multiple ways (i.e. represented by more than one glyphs), this extension code is used by the Immigration Department and some other government departments to indicate which glyph to use when displaying or printing that Chinese character.  There are also some rare cases where a CCC may be used to represent more than one Chinese characters, in these cases, this extension code will be used to indicate which character it is referring to.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="cct:Text.CT">
+				<xs:pattern value="[0-9]"/>
+				<xs:length value="1"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>
