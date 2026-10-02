@@ -9,6 +9,8 @@ Inputs
                                           (month signs, bopomofo, letters, punctuation),
                                           which Unihan does not cover
   sources/swift_eccc_v2.xlsx              SWIFT e-CCC v2 (simplified + traditional per code)
+  sources/hkhc-ccc-source-v2.txt          hkhc/ccc (github.com/hkhc/ccc @920846e, Apache-2.0),
+                                          a community table that layers several readings per code
   sources/Unihan_STVariants.txt           kSimplifiedVariant / kTraditionalVariant
   sources/opencc/*.txt                    OpenCC single-character S/T and regional variants
                                           (plus SWIFT's own S/T pairs)
@@ -19,6 +21,8 @@ Output
     cn:  {code: char},            mainland 标准电码本 (1983) per Unihan
     tw:  {code: char},            Taiwan 中文電碼 per Unihan (a char may own 2 codes)
     sw:  {code: [simp, trad, note?]}   SWIFT e-CCC v2; "" = blank side
+    hk:  {code: "陳c陈"}             hkhc/ccc, packed: each char is preceded by its layer
+                                      mark (none = base; o=old, 1/2/3=s1–s3, c=china1, C=china2)
     nh:  {cn: [codes], tw: [codes]}    codes that are non-Hanzi (from NJStar)
     v:   {char: "related chars"}       S/T + regional variants, for cross-lookup
   }
@@ -98,6 +102,35 @@ def read_swift():
     return out
 
 
+HKHC_LAYERS = {"old": "o", "s1": "1", "s2": "2", "s3": "3", "china1": "c", "china2": "C"}
+
+
+def read_hkhc():
+    """Each line: code, then (optional "g_<layer> ")U+XXXX<TAB>char pairs.
+
+    The file was scraped from an HTML table, so a few cells are irregular: an
+    astral char shown as "&#x...;(<script>…)", a stray ";" or a space instead of
+    a tab. The code point is authoritative; the glyph column is ignored.
+    """
+    out = {}
+    pair = re.compile(r"(?:g_(\w+)\s+)?U\+([0-9A-Fa-f]{4,6})")
+    for line in (SRC / "hkhc-ccc-source-v2.txt").open(encoding="utf-8"):
+        m = re.match(r"^(\d{4})\t(.*)$", line.rstrip("\n"))
+        if not m:
+            continue
+        code, rest = m.groups()
+        rest = re.sub(r"\(<script.*$", "", rest)  # trailing markup after an entity
+        entries = []
+        for layer, cp in pair.findall(rest):
+            assert not layer or layer in HKHC_LAYERS, (code, layer)
+            ch = chr(int(cp, 16))
+            if [layer, ch] not in entries:
+                entries.append([layer, ch])
+        if entries:
+            out[code] = "".join(HKHC_LAYERS.get(layer, "") + ch for layer, ch in entries)
+    return out
+
+
 def read_variants():
     edges = defaultdict(set)
 
@@ -146,11 +179,14 @@ def main():
         nonhan[name] = sorted(extra)
 
     sw = read_swift()
+    hk = read_hkhc()
 
     edges = read_variants()
     chars = set(cn.values()) | set(tw.values())
     for s, t, *_ in sw.values():
         chars.update(c for c in (s, t) if c)
+    for packed in hk.values():
+        chars.update(ch for ch in packed if ord(ch) > 0x7F)
     chars = {c for c in chars if len(c) == 1}
     # Keep only variant links that lead somewhere useful: to a char of any table,
     # plus one extra hop (國→国→國 style chains are covered by symmetric edges).
@@ -175,11 +211,13 @@ def main():
                 "cn": len(cn), "cnHan": len(cn) - len(nonhan["cn"]),
                 "tw": len(tw), "twHan": len(tw) - len(nonhan["tw"]),
                 "sw": len(sw),
+                "hk": len(hk), "hkChars": sum(sum(ord(c) > 0x7F for c in v) for v in hk.values()),
             },
         },
         "cn": sort_codes(cn),
         "tw": sort_codes(tw),
         "sw": sort_codes(sw),
+        "hk": sort_codes(hk),
         "nh": nonhan,
         "v": variants,
     }

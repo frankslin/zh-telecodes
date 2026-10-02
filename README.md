@@ -21,6 +21,7 @@
 | 中國大陸 | Unicode 18.0 Unihan `kMainlandTelegraph`，加上 NJStar 碼表中的非漢字碼 | 7,078 漢字 + 210 非漢字 |
 | 台灣 | Unicode 18.0 Unihan `kTaiwanTelegraph`，加上 NJStar 碼表中的非漢字碼 | 9,026 漢字 + 93 非漢字 |
 | SWIFT e-CCC v2 | SWIFT《Chinese Commercial Code》第二版 xlsx（2014 年起由 CCC Maintenance Group 維護） | 9,395 |
+| hkhc/ccc（民間） | [hkhc/ccc](https://github.com/hkhc/ccc) `data/ccc-source-v2.txt`（@920846e，Apache-2.0） | 9,718 碼位、13,012 字 |
 
 - NJStar 碼表由 Unicode 14.0 生成。其中的漢字碼與 Unihan 18.0 逐一比對，完全一致，所以只取它的非漢字碼（月份、注音、字母、標點等），這部分由 Jaemin Chung 整理。
 - 繁簡對應綜合三處來源：Unihan 的 `kSimplifiedVariant` / `kTraditionalVariant`，OpenCC 的 `STCharacters` / `TSCharacters` / `TWVariants` / `HKVariants`，以及 SWIFT 表的繁簡配對。
@@ -30,9 +31,13 @@
 **香港沒有公開的官方電碼表。** 身份證上的電碼由入境事務處內部維護。根據數字政策辦公室 CSTF Paper 2003/01（`sources/person_name_cstf_200301.pdf`）及 Person Chinese Name 通用資料綱要（`sources/person_chinese_name_v1_0.xsd`）：
 
 - 每個字是「4 位數字 + 1 位可選擴展位」，擴展位用來區分字形，身份證上只印前 4 位；
-- 綱要明言不附碼表（“No code lists are associated with this schema”）。
+- [Person Chinese Name 通用資料綱要](https://www.digitalpolicy.gov.hk/en/our_work/data_governance/policies_standards/interoperability_framework/common_schemas/person_chinese_name/index.html)的「Related Code Lists」一項為「Nil」，即不附碼表。
 
-常見姓氏的碼與台灣碼相同。網上的「香港身份證電碼」查詢站所用資料其實也是 Unihan 台灣碼。
+常見姓氏的碼與台灣碼相同。網上的「香港身份證電碼」查詢站所用資料多為 Unihan 台灣碼。
+
+同一綱要的示例 XML 演示了擴展位：「陳旻旼」編為 7115、2479、2479＋擴展位 2。但台灣碼 2479 是「旡」、「旼」是 8512，中國大陸「旻」是 2549，hkhc/ccc 的 2479 是「旡」「曆」，各表都對不上，未能確證入境處的實際碼位。
+
+民間碼表 hkhc/ccc 每字帶來源層標記：無標記的基本層 7,567 字（7,435 字與台灣碼相同），另有 old、s1／s2／s3、china1／china2 各層。原作未說明各層含義；頁面上的解讀（old＝舊碼原字、s 層＝同碼位的另一寫法、china 層＝中國大陸簡化字及改填字）是逐碼比對後的推測。
 
 SWIFT 表由中國大陸 1983 版與香港商務印書館 1972 版彙編而成，但以中國大陸版為對齊基準，所以它的繁體欄並不等於 1972 年香港版的原貌。頁面上把它標作「SWIFT（港澳）」，沒有標作「香港官方」。
 
@@ -54,6 +59,7 @@ sources/
   swift_eccc_v2.xlsx       SWIFT e-CCC 第二版
   swift_ccc_mpg.pdf        PMPG Market Practice Guidelines (2025)
   person_name_cstf_200301.pdf, person_chinese_name_v1_0.xsd  香港特區政府姓名資料標準
+  hkhc-ccc-source-v2.txt   hkhc/ccc 民間碼表
   opencc/                  OpenCC 單字字表
 ```
 

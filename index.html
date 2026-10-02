@@ -198,7 +198,7 @@
       font-size: 13px; color: var(--muted);
     }
     .convert-head b { color: var(--text); font-weight: 600; }
-    .strings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+    .strings { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
     .strings > div { padding: 12px 16px; border-right: 1px solid var(--line); min-width: 0; }
     .strings > div:last-child { border-right: 0; }
     .strings .lbl { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 6px; }
@@ -265,7 +265,7 @@
     .rel-badge[data-rel="diff"] { background: var(--c-diff); }
     .rel-badge[data-rel="cn"], .rel-badge[data-rel="tw"] { background: var(--c-one); }
     .rel-badge[data-rel="nh"] { background: var(--c-nh); }
-    .rel-badge[data-rel="sw"] { background: var(--c-nh); }
+    .rel-badge[data-rel="other"] { background: var(--c-nh); }
 
     /* conversion rows */
     .cv-input { width: 96px; }
@@ -274,6 +274,11 @@
     .cv-hit .gc { font-size: calc(var(--han-size) * 0.75); }
     .cv-hit.via { opacity: 0.72; }
     .cv-hit .via-tag { font-size: 11px; color: var(--faint); }
+    .cv-scroll { overflow-x: auto; }
+    .cv-scroll table { min-width: 620px; }
+    .hk-hit { display: inline-flex; align-items: baseline; gap: 2px; }
+    .col-hk .gc { font-size: calc(var(--han-size) * 0.8); }
+    .layer-tag { font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--faint); margin-left: 2px; cursor: help; }
 
     #sentinel { height: 1px; }
     .loading { padding: 18px; text-align: center; color: var(--muted); font-size: 13px; }
@@ -383,6 +388,7 @@
             <th>台灣</th>
             <th>SWIFT 繁 <small>港澳</small></th>
             <th class="col-sws">SWIFT 簡</th>
+            <th>hkhc/ccc <small>民間</small></th>
             <th class="col-rel">兩岸</th>
           </tr>
         </thead>
@@ -418,7 +424,7 @@
           <tbody>
             <tr><td>中國大陸</td><td>《標準電碼本（修訂本）》，1983</td><td>簡化字</td><td>公開出版</td><td>Unihan <code>kMainlandTelegraph</code></td></tr>
             <tr><td>台灣</td><td>沿用民國電碼本，略有增補</td><td>繁體</td><td>公開</td><td>Unihan <code>kTaiwanTelegraph</code></td></tr>
-            <tr><td>香港</td><td>入境事務處內部電碼（4 位＋擴展位）</td><td>繁體</td><td>未公開</td><td>無官方資料；可參考 <code>kTaiwanTelegraph</code>，銀行用 SWIFT e-CCC 第二版</td></tr>
+            <tr><td>香港</td><td>入境事務處內部電碼（4 位＋擴展位）</td><td>繁體</td><td>未公開</td><td>無官方資料；可參考 <code>kTaiwanTelegraph</code>；民間整理見 hkhc/ccc；銀行用 SWIFT e-CCC 第二版</td></tr>
             <tr><td>澳門</td><td>第 88/85/M 號法令附件字音表，1985</td><td>繁體</td><td>刊於《公報》</td><td>無（附件為掃描影像，尚未數字化）</td></tr>
           </tbody>
         </table>
@@ -437,8 +443,8 @@
       <p>基本沿用民國舊碼（0000–9763、代時碼 9801–9824、代日碼 9901–9931），只在 9764–9798 補入少量漢字，在 9851–9862 補標點、9871–9896 補拉丁字母。</p>
 
       <h4>香港</h4>
-      <p>香港沒有公開的電碼表。<b>入境事務處</b>在內部維護一套電碼：據數字政策辦公室（前資訊科技總監辦公室）《Common Schema for Person Name》（CSTF Paper 2003/01），入境處系統以電碼而非漢字儲存中文姓名（至多 6 字）；每個字由 <b>4 位數字加 1 位可選擴展位</b>組成，擴展位用於區分同碼下的不同字形（少數情況下區分同碼的不同字），<b>身份證上只印前 4 位</b>。同一標準的 XSD 註明不附碼表（“No code lists are associated with this schema”）。智能身份證晶片內則以 ISO 10646 儲存姓名，另加一字節標示字形。</p>
-      <p>這套碼屬繁體舊碼一系，常見姓氏如 <span class="han" lang="zh-Hant-HK">陳</span> 7115、<span class="han" lang="zh-Hant-HK">李</span> 2621、<span class="han" lang="zh-Hant-HK">黃</span> 7806、<span class="han" lang="zh-Hant-HK">張</span> 1728 與台灣碼相同，因此<b>查身份證電碼可先看「台灣」欄</b>；罕用字、本地字及字形擴展位，以入境處記錄為準。香港本地刊行過的碼本有 1972 年香港商務印書館《新編標準電碼本》，以及 1971 年皇家香港警察政治部為政府內部編制的《三用中文電報碼本》（Three Way Chinese Commercial/Telegraphic Code Book，附國語、粵語拼音，1989 年再版），均未見數字化。網上自稱「香港身份證電碼」的查詢網站，所用資料實為 Unicode 台灣碼。</p>
+      <p>香港沒有公開的電碼表。<b>入境事務處</b>在內部維護一套電碼：據數字政策辦公室（前資訊科技總監辦公室）《Common Schema for Person Name》（CSTF Paper 2003/01），入境處系統以電碼而非漢字儲存中文姓名（至多 6 字）；每個字由 <b>4 位數字加 1 位可選擴展位</b>組成，擴展位用於區分同碼下的不同字形（少數情況下區分同碼的不同字），<b>身份證上只印前 4 位</b>。同屬互通架構的 <a href="https://www.digitalpolicy.gov.hk/en/our_work/data_governance/policies_standards/interoperability_framework/common_schemas/person_chinese_name/index.html" target="_blank" rel="noopener">Person Chinese Name 通用資料綱要</a>，在「Related Code Lists」一項填的是「Nil」，即不附碼表。該綱要的示例 XML 正好演示了擴展位：姓名「<span class="han" lang="zh-Hant-HK">陳旻旼</span>」編為 7115、2479、2479＋擴展位 2——<span class="han" lang="zh-Hant-HK">旻</span>、<span class="han" lang="zh-Hant-HK">旼</span>共用 2479，後者再以擴展位區分（綱要注：“the 2nd and 3rd Chinese Characters have the same FourDigitCode, but the 3rd Chinese Character has additional ExtensionNumber”）。值得注意的是，這與現有各表都對不上：台灣碼 2479 為 <span class="han" lang="zh-Hant">旡</span>、<span class="han" lang="zh-Hant">旼</span> 為 8512，中國大陸 <span class="han" lang="zh-Hans">旻</span> 為 2549；示例可能只是示意，也可能反映入境處碼表與台灣碼確有出入，未能確證。智能身份證晶片內則以 ISO 10646 儲存姓名，另加一字節標示字形。</p>
+      <p>這套碼屬繁體舊碼一系，常見姓氏如 <span class="han" lang="zh-Hant-HK">陳</span> 7115、<span class="han" lang="zh-Hant-HK">李</span> 2621、<span class="han" lang="zh-Hant-HK">黃</span> 7806、<span class="han" lang="zh-Hant-HK">張</span> 1728 與台灣碼相同，因此<b>查身份證電碼可先看「台灣」欄</b>；罕用字、本地字及字形擴展位，以入境處記錄為準。香港本地刊行過的碼本有 1972 年香港商務印書館《新編標準電碼本》，以及 1971 年皇家香港警察政治部為政府內部編制的《三用中文電報碼本》（Three Way Chinese Commercial/Telegraphic Code Book，附國語、粵語拼音，1989 年再版），均未見數字化。網上自稱「香港身份證電碼」的查詢網站，所用資料多為 Unicode 台灣碼。民間整理的碼表另有 <a href="https://github.com/hkhc/ccc" target="_blank" rel="noopener">hkhc/ccc</a>（Herman Cheung，2021，宣稱用於香港身份證姓名）：收 9,718 個碼位、13,031 個字，每字按來源分層標記——無標記的基本層 7,567 字，其中 7,432 字與台灣碼相同；「old」層 1,493 字為舊碼原字；「s1／s2／s3」層 1,944 字是同碼位上的另一寫法，多與 SWIFT 繁體欄或中國大陸碼相同；「china1／china2」層 2,027 字為中國大陸簡化字及改填字。資料出處未註明，看來是從某個網頁表格整理而得。本頁將它列為「hkhc/ccc（民間）」一欄，各層標記原樣保留；原作未說明各層含義，上述解讀是本頁逐碼比對後的推測。</p>
 
       <h4>澳門</h4>
       <p>澳門的電碼表是<b>法律附件</b>。1985 年 10 月 11 日刊於《澳門政府公報》第 40 期的<b>第 88/85/M 號法令</b>（<a href="https://bo.dsaj.gov.mo/bo/i/85/40/declei88_cn.asp" target="_blank" rel="noopener">中文本</a>、<a href="https://bo.dsaj.gov.mo/bo/i/85/40/declei88.asp" target="_blank" rel="noopener">葡文本</a>）「核准本法令附件關于附有密碼及廣州音譯音之字音表」，葡文稱 <i>silabário codificado de romanização do cantonense</i>。法令規定一切官方文件須使用表中所定的羅馬拼音——澳門證件上葡式粵語拼法（如 <span class="han" lang="zh-Hant">陳</span> CHAN）即源於此；字表的增補與修訂，由行政公職局建議、以行政長官批示刊登於《公報》。法令自 1986 年 1 月 1 日生效，2024 年經第 26/2024 號及第 11/2024 號法律適應化處理及修改，至今有效。</p>
@@ -453,8 +459,8 @@
 
       <h3>本頁資料與統計</h3>
       <table class="stat-table" id="statTable"></table>
-      <p style="margin-top:10px">「兩岸」一欄比較同一碼位上中國大陸與台灣的字：<span class="rel-badge" data-rel="same">同字</span> 字形完全相同；<span class="rel-badge" data-rel="st">繁簡</span> 互為繁簡或地區異體（依 Unicode 繁簡變體、OpenCC 字表及 SWIFT 表的繁簡配對）；<span class="rel-badge" data-rel="diff">異字</span> 兩字無對應關係；<span class="rel-badge" data-rel="cn">僅中國大陸</span> <span class="rel-badge" data-rel="tw">僅台灣</span> 僅一方有字；<span class="rel-badge" data-rel="nh">非漢字</span> 字母、注音、標點、月份與日時符號。</p>
-        <p>查詢漢字時，若某地碼表沒有這個字，會先做繁簡轉換，找出該地的寫法與電碼（淺色並標「轉換結果」）；繁簡資料也無對應時，列出其他碼表所給碼位上該地的字（標「同碼」，如 <span class="han" lang="zh-Hant">鑱</span> 7016 ↔ 中國大陸 <span class="han" lang="zh-Hans">𰾠</span>）；查詢電碼時直接列出三表在該碼位上的字。全部資料隨頁面載入，<b>所有轉換均在瀏覽器本地執行</b>，輸入的姓名與電碼不會傳送到任何伺服器。</p>
+      <p style="margin-top:10px">「兩岸」一欄比較同一碼位上中國大陸與台灣的字：<span class="rel-badge" data-rel="same">同字</span> 字形完全相同；<span class="rel-badge" data-rel="st">繁簡</span> 互為繁簡或地區異體（依 Unicode 繁簡變體、OpenCC 字表及 SWIFT 表的繁簡配對）；<span class="rel-badge" data-rel="diff">異字</span> 兩字無對應關係；<span class="rel-badge" data-rel="cn">僅中國大陸</span> <span class="rel-badge" data-rel="tw">僅台灣</span> 僅一方有字；<span class="rel-badge" data-rel="other">其他</span> 兩岸皆無字，僅 SWIFT 或 hkhc/ccc 有字；<span class="rel-badge" data-rel="nh">非漢字</span> 字母、注音、標點、月份與日時符號。</p>
+        <p>查詢漢字時，若某地碼表沒有這個字，會先做繁簡轉換，找出該地的寫法與電碼（淺色並標「轉換結果」）；繁簡資料也無對應時，列出其他碼表所給碼位上該地的字（標「同碼」，如 <span class="han" lang="zh-Hant">鑱</span> 7016 ↔ 中國大陸 <span class="han" lang="zh-Hans">𰾠</span>）；查詢電碼時直接列出各表在該碼位上的字。全部資料隨頁面載入，<b>所有轉換均在瀏覽器本地執行</b>，輸入的姓名與電碼不會傳送到任何伺服器。</p>
 
       <h3>參考資料</h3>
       <ul class="refs">
@@ -469,20 +475,21 @@
         <li>香港特區政府數字政策辦公室：<a href="https://www.digitalpolicy.gov.hk/en/our_work/data_governance/policies_standards/interoperability_framework/common_schemas/doc/person_name_cstf_200301.pdf" target="_blank" rel="noopener">Common Schema for Person Name（CSTF Paper 2003/01）</a>；<a href="https://www.digitalpolicy.gov.hk/en/our_work/data_governance/policies_standards/interoperability_framework/common_schemas/person_chinese_name/index.html" target="_blank" rel="noopener">Person Chinese Name 通用資料綱要</a>。</li>
         <li>澳門：<a href="https://bo.dsaj.gov.mo/bo/i/85/40/declei88_cn.asp" target="_blank" rel="noopener">第 88/85/M 號法令</a>及<a href="https://images.bo.dsaj.gov.mo//bo/i/85/40/dl-88-1985-an.pdf" target="_blank" rel="noopener">附件字音表</a>（《澳門政府公報》1985 年第 40 期）。</li>
         <li>中國國家圖書館藏民國電碼本（Wikimedia Commons）：<a href="https://commons.wikimedia.org/wiki/File:NLC416-02jh004786-9308_%E9%9B%BB%E7%A2%BC%E6%96%B0%E7%B7%A8.pdf" target="_blank" rel="noopener">《電碼新編》</a>（上海中華書局）；<a href="https://commons.wikimedia.org/wiki/File:NLC416-07jh011962-5748_%E5%88%9D%E7%89%88%E5%9C%8B%E9%9F%B3%E5%AD%97%E5%BD%99%E5%8F%8A%E9%9B%BB%E7%A2%BC%E6%9B%B8.pdf" target="_blank" rel="noopener">《初版國音字彙及電碼書》</a>（周辨明編，1937）。</li>
+        <li>民間碼表：<a href="https://github.com/hkhc/ccc" target="_blank" rel="noopener">hkhc/ccc</a>（Chinese Commercial Code mapping library，2021）。</li>
         <li><a href="https://github.com/BYVoid/OpenCC" target="_blank" rel="noopener">OpenCC</a> 繁簡轉換字表。</li>
       </ul>
     </article>
 
     <p class="footer">
-      資料來源：中國大陸、台灣漢字電碼取自 Unicode <a href="https://www.unicode.org/reports/tr38/" target="_blank" rel="noopener">Unihan</a> 資料庫 <code>kMainlandTelegraph</code> / <code>kTaiwanTelegraph</code>（Unicode <span id="uniVer"></span>）；非漢字電碼取自 <a href="https://www.njstar.com/cms/chinese-commercial-telegraph-code-lookup" target="_blank" rel="noopener">NJStar 電報碼查詢</a>碼表（Jaemin Chung 整理），沿革亦參考其《電碼本的編制及其歷次變動概況》（選自《怎樣使用〈標準電碼本（修訂本）〉》）。SWIFT 碼表取自 SWIFT《Chinese Commercial Code (e-CCC) 第二版》及 PMPG《Market Practice Guidelines for the Adoption of Chinese Commercial Code》（2025）。香港身份證電碼說明依據香港特區政府數字政策辦公室 CSTF Paper 2003/01 與 Person Chinese Name 通用資料綱要。澳門電碼說明依據《澳門特別行政區公報》第 88/85/M 號法令及其附件。繁簡對應依 Unihan 與 <a href="https://github.com/BYVoid/OpenCC" target="_blank" rel="noopener">OpenCC</a>。字體由 <a href="https://free-fonts.digitalhumanities.dev/" target="_blank" rel="noopener">free-fonts</a> 提供：簡體用文津明體，繁體用全字庫正宋體，缺字時互相回退。
+      資料來源：中國大陸、台灣漢字電碼取自 Unicode <a href="https://www.unicode.org/reports/tr38/" target="_blank" rel="noopener">Unihan</a> 資料庫 <code>kMainlandTelegraph</code> / <code>kTaiwanTelegraph</code>（Unicode <span id="uniVer"></span>）；非漢字電碼取自 <a href="https://www.njstar.com/cms/chinese-commercial-telegraph-code-lookup" target="_blank" rel="noopener">NJStar 電報碼查詢</a>碼表（Jaemin Chung 整理），沿革亦參考其《電碼本的編制及其歷次變動概況》（選自《怎樣使用〈標準電碼本（修訂本）〉》）。SWIFT 碼表取自 SWIFT《Chinese Commercial Code (e-CCC) 第二版》及 PMPG《Market Practice Guidelines for the Adoption of Chinese Commercial Code》（2025）。香港身份證電碼說明依據香港特區政府數字政策辦公室 CSTF Paper 2003/01 與 Person Chinese Name 通用資料綱要。香港民間碼表取自 <a href="https://github.com/hkhc/ccc" target="_blank" rel="noopener">hkhc/ccc</a>（Apache-2.0）。澳門電碼說明依據《澳門特別行政區公報》第 88/85/M 號法令及其附件。繁簡對應依 Unihan 與 <a href="https://github.com/BYVoid/OpenCC" target="_blank" rel="noopener">OpenCC</a>。字體由 <a href="https://free-fonts.digitalhumanities.dev/" target="_blank" rel="noopener">free-fonts</a> 提供：簡體用文津明體，繁體用全字庫正宋體，缺字時互相回退。
     </p>
   </main>
 
   <script src="./data.js"></script>
   <script>
     const D = window.TELECODE;
-    const REGIONS = ["cn", "tw", "sw"];
-    const REGION_LABEL = { cn: "中國大陸", tw: "台灣", sw: "SWIFT（港澳）" };
+    const REGIONS = ["cn", "tw", "sw", "hk"];
+    const REGION_LABEL = { cn: "中國大陸", tw: "台灣", sw: "SWIFT（港澳）", hk: "hkhc/ccc（民間）" };
     const REL = {
       same: { label: "同字", long: "兩岸同字" },
       st:   { label: "繁簡", long: "繁簡對應" },
@@ -490,9 +497,9 @@
       cn:   { label: "僅中國大陸", long: "僅中國大陸有字" },
       tw:   { label: "僅台灣", long: "僅台灣有字" },
       nh:   { label: "非漢字", long: "非漢字" },
-      sw:   { label: "僅SWIFT", long: "僅 SWIFT 有字" },
+      other: { label: "其他", long: "僅 SWIFT 或 hkhc/ccc 有字" },
     };
-    const CHIP_ORDER = ["same", "st", "diff", "cn", "tw", "nh"];
+    const CHIP_ORDER = ["same", "st", "diff", "cn", "tw", "nh", "other"];
     const EXAMPLES = ["陳大文", "7115 1129 2429", "国语", "5831", "7016", "U+9673", "毛泽东", "0022 0948"];
 
     // ---------- helpers ----------
@@ -500,26 +507,49 @@
     function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
     function fmtCp(ch) { return "U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0"); }
     const pad4 = (n) => String(n).padStart(4, "0");
-    const LANG = { cn: "zh-Hans", tw: "zh-Hant-TW", sws: "zh-Hans", swt: "zh-Hant-HK" };
+    const LANG = { cn: "zh-Hans", tw: "zh-Hant-TW", sws: "zh-Hans", swt: "zh-Hant-HK", hk: "zh-Hant-HK", hks: "zh-Hans" };
+    // hkhc/ccc layers: each char in D.hk[code] may be preceded by a one-letter layer mark.
+    const HK_LAYER = { o: "old", 1: "s1", 2: "s2", 3: "s3", c: "china1", C: "china2" };
+    const HK_LAYER_TITLE = {
+      old: "old：舊碼原字（推測）", s1: "s1：同碼位的另一寫法（推測）", s2: "s2：同碼位的另一寫法（推測）", s3: "s3：同碼位的另一寫法（推測）",
+      china1: "china1：中國大陸簡化字（推測）", china2: "china2：中國大陸改填字（推測）",
+    };
 
     // ---------- indices ----------
     const NH = { cn: new Set(D.nh.cn), tw: new Set(D.nh.tw) };
     // Char at a code for each column; SWIFT has a simplified and a traditional side.
     function at(code) {
       const sw = D.sw[code] || ["", ""];
-      return { cn: D.cn[code] || "", tw: D.tw[code] || "", sws: sw[0], swt: sw[1], swNote: sw[2] || "" };
+      return { cn: D.cn[code] || "", tw: D.tw[code] || "", sws: sw[0], swt: sw[1], swNote: sw[2] || "", hk: hkEntries(code) };
     }
+    const HK_CACHE = new Map();
+    function hkEntries(code) {
+      if (HK_CACHE.has(code)) return HK_CACHE.get(code);
+      const out = [];
+      let layer = "";
+      for (const c of Array.from(D.hk[code] || "")) {
+        if (HK_LAYER[c]) { layer = HK_LAYER[c]; continue; }
+        out.push({ layer, ch: c });
+        layer = "";
+      }
+      HK_CACHE.set(code, out);
+      return out;
+    }
+    // The char hkhc/ccc would print for a code: first base-layer char, else the first one.
+    function hkMain(code) { const e = hkEntries(code); return (e.find(x => !x.layer) || e[0] || {}).ch || ""; }
+    function hkLangKey(layer) { return layer.startsWith("china") ? "hks" : "hk"; }
     // char -> {cn:[codes], tw:[codes], sw:[codes]}
     const byChar = new Map();
     function addIdx(ch, region, code) {
       if (!ch) return;
-      if (!byChar.has(ch)) byChar.set(ch, { cn: [], tw: [], sw: [] });
+      if (!byChar.has(ch)) byChar.set(ch, { cn: [], tw: [], sw: [], hk: [] });
       const list = byChar.get(ch)[region];
       if (!list.includes(code)) list.push(code);
     }
     for (const [code, ch] of Object.entries(D.cn)) addIdx(ch, "cn", code);
     for (const [code, ch] of Object.entries(D.tw)) addIdx(ch, "tw", code);
     for (const [code, [s, t]] of Object.entries(D.sw)) { addIdx(t, "sw", code); addIdx(s, "sw", code); }
+    for (const code of Object.keys(D.hk)) for (const x of hkEntries(code)) addIdx(x.ch, "hk", code);
 
     function related(a, b) { return (D.v[a] || "").includes(b) || (D.v[b] || "").includes(a); }
     function relOf(code) {
@@ -528,14 +558,14 @@
       if (a && b) return a === b ? "same" : related(a, b) ? "st" : "diff";
       if (a) return "cn";
       if (b) return "tw";
-      return "sw";
+      return "other";
     }
 
     const ALL = [];
     const REL_COUNT = {};
     for (let i = 0; i < 10000; i++) {
       const code = pad4(i);
-      if (!D.cn[code] && !D.tw[code] && !D.sw[code]) continue;
+      if (!D.cn[code] && !D.tw[code] && !D.sw[code] && !D.hk[code]) continue;
       const rel = relOf(code);
       REL_COUNT[rel] = (REL_COUNT[rel] || 0) + 1;
       ALL.push({ code, rel });
@@ -591,6 +621,13 @@
     function charBtn(ch, langKey, cls = "") {
       return `<button type="button" class="gc han ${cls}" lang="${LANG[langKey]}" data-q="${esc(ch)}" title="${esc(fmtCp(ch))}">${esc(ch)}</button>`;
     }
+    function hkCellHtml(code, highlight = "") {
+      const e = hkEntries(code);
+      if (!e.length) return '<span class="empty">—</span>';
+      return `<div class="cv-cell">${e.map(x =>
+        `<span class="hk-hit${highlight && x.ch !== highlight ? " dim" : ""}">${charBtn(x.ch, hkLangKey(x.layer))}${x.layer ? `<span class="layer-tag" title="${esc(HK_LAYER_TITLE[x.layer])}">${x.layer}</span>` : ""}</span>`
+      ).join("")}</div>`;
+    }
     function codeBtn(code, cls = "") {
       return `<button type="button" class="code ${cls}" data-q="${code}">${code}</button>`;
     }
@@ -614,13 +651,18 @@
               // Not in this table even via S/T variants: show what this table holds
               // at the codes the other tables assign (e.g. 鑱 7016 ↔ 中國大陸 𰾠).
               const same = [...new Set(REGIONS.filter(o => o !== r).flatMap(o => hits[o].filter(x => !x.via).map(x => x.code)))]
-                .map(code => ({ code, ch: r === "sw" ? swChar(code, "t") : at(code)[r] })).filter(x => x.ch);
+                .map(code => ({ code, ch: r === "sw" ? swChar(code, "t") : r === "hk" ? hkMain(code) : at(code)[r] })).filter(x => x.ch);
               if (!same.length) return `<td><span class="empty">無</span></td>`;
               return `<td><div class="cv-cell">${same.map(x =>
-                `<span class="cv-hit via" title="該地碼表無「${esc(ch)}」，同一碼位上的字是「${esc(x.ch)}」">${codeBtn(x.code)}${charBtn(x.ch, r === "sw" ? "swt" : r)}<span class="via-tag">同碼</span></span>`
+                `<span class="cv-hit via" title="該地碼表無「${esc(ch)}」，同一碼位上的字是「${esc(x.ch)}」">${codeBtn(x.code)}${charBtn(x.ch, r === "sw" ? "swt" : r === "hk" ? "hk" : r)}<span class="via-tag">同碼</span></span>`
               ).join("")}</div></td>`;
             }
             const lk = r === "sw" ? "swt" : r;
+            if (r === "hk") return `<td><div class="cv-cell">${h.map(x => {
+              const layer = (hkEntries(x.code).find(e => e.ch === x.ch) || {}).layer || "";
+              const tag = layer ? `<span class="layer-tag" title="${esc(HK_LAYER_TITLE[layer])}">${layer}</span>` : "";
+              return `<span class="cv-hit${x.via ? " via" : ""}">${codeBtn(x.code)}${x.via || x.ch !== ch ? charBtn(x.ch, hkLangKey(layer)) : ""}${tag}${x.via ? '<span class="via-tag">轉換結果</span>' : ""}</span>`;
+            }).join("")}</div></td>`;
             return `<td><div class="cv-cell">${h.map(x => {
               const a = at(x.code);
               const shown = r === "sw" ? (x.ch === a.sws && a.sws !== a.swt ? a.sws : a.swt || a.sws) : x.ch;
@@ -635,6 +677,7 @@
           pq.codes.map(c => at(c).cn || "□").join(""),
           pq.codes.map(c => at(c).tw || "□").join(""),
           pq.codes.map(c => swChar(c, "t") || "□").join(""),
+          pq.codes.map(c => hkMain(c) || "□").join(""),
         ];
         head = `<b>電碼 → 漢字</b><span>共 ${pq.codes.length} 碼 · □ 表示該碼位無字</span>`;
         rows = pq.codes.map(code => {
@@ -642,7 +685,7 @@
           const cell = (ch, lk, extra = "") => `<td>${ch ? charBtn(ch, lk) + extra : '<span class="empty">空碼</span>'}</td>`;
           const swExtra = (a.sws && a.swt && a.sws !== a.swt ? ` <span class="note-tag">簡</span>${charBtn(a.sws, "sws")}` : "")
             + (a.swNote ? `<span class="note-tag">${esc(a.swNote)}</span>` : "");
-          return `<tr><td class="cv-input">${codeBtn(code)}</td>${cell(a.cn, "cn")}${cell(a.tw, "tw")}${cell(a.swt || a.sws, a.swt ? "swt" : "sws", swExtra)}</tr>`;
+          return `<tr><td class="cv-input">${codeBtn(code)}</td>${cell(a.cn, "cn")}${cell(a.tw, "tw")}${cell(a.swt || a.sws, a.swt ? "swt" : "sws", swExtra)}<td>${a.hk.length ? hkCellHtml(code) : '<span class="empty">空碼</span>'}</td></tr>`;
         }).join("");
       }
       const isHan = pq.kind === "codes";
@@ -652,10 +695,10 @@
           <div><div class="lbl"><span>${REGION_LABEL[r]}</span>${copyBtn(strings[i])}</div>
           <div class="val${isHan ? " han" : ""}" ${isHan ? `lang="${LANG[r === "sw" ? "swt" : r]}"` : ""}>${esc(strings[i])}</div></div>`).join("")}
         </div>
-        <table>
-          <thead><tr><th class="cv-input">${pq.kind === "chars" ? "字" : "電碼"}</th><th>中國大陸</th><th>台灣</th><th>SWIFT（港澳）</th></tr></thead>
+        <div class="cv-scroll"><table>
+          <thead><tr><th class="cv-input">${pq.kind === "chars" ? "字" : "電碼"}</th><th>中國大陸</th><th>台灣</th><th>SWIFT（港澳）</th><th>hkhc/ccc（民間）</th></tr></thead>
           <tbody>${rows}</tbody>
-        </table>`;
+        </table></div>`;
     }
 
     // ---------- rendering: code table ----------
@@ -683,7 +726,7 @@
         : `碼位 <b>${n.toLocaleString()}</b> 個${relDesc}`;
       $("#resultHint").innerHTML = n === 0 && pq.kind !== "bad"
         ? '<span class="warn">沒有匹配的碼位。</span>'
-        : (state.query ? "下表列出相關碼位在三表中的字" : "向下滾動瀏覽全部碼位 · 按 / 聚焦搜索框");
+        : (state.query ? "下表列出相關碼位在各表中的字" : "向下滾動瀏覽全部碼位 · 按 / 聚焦搜索框");
     }
 
     function rowHtml(r) {
@@ -696,7 +739,8 @@
         ${cell(a.cn, "cn", nhTag("cn"))}
         ${cell(a.tw, "tw", nhTag("tw"))}
         ${a.swt ? cell(a.swt, "swt", a.sws ? "" : swNote) : `<td><span class="empty">—</span>${a.sws ? swNote : ""}</td>`}
-        <td class="col-sws">${a.sws ? charBtn(a.sws, "sws") : '<span class="empty">—</span>'}${a.sws && !a.swt ? "" : ""}</td>
+        <td class="col-sws">${a.sws ? charBtn(a.sws, "sws") : '<span class="empty">—</span>'}</td>
+        <td class="col-hk">${hkCellHtml(r.code)}</td>
         <td class="col-rel"><span class="rel-badge" data-rel="${r.rel}">${REL[r.rel].label}</span></td>
       </tr>`;
     }
@@ -719,8 +763,13 @@
       const chips = [{ rel: "", label: "全部碼位", count: ALL.length }]
         .concat(CHIP_ORDER.map(k => ({ rel: k, label: REL[k].long, count: REL_COUNT[k] || 0 })));
       $("#statChips").innerHTML = chips.map(c =>
-        `<button type="button" class="stat-chip${state.rel === c.rel ? " is-active" : ""}" data-rel="${c.rel}">${c.rel ? `<span class="dot" style="background:var(--c-${c.rel === "cn" || c.rel === "tw" ? "one" : c.rel})"></span>` : ""}${esc(c.label)} <b>${c.count.toLocaleString()}</b></button>`
+        `<button type="button" class="stat-chip${state.rel === c.rel ? " is-active" : ""}" data-rel="${c.rel}">${c.rel ? `<span class="dot" style="background:var(--c-${c.rel === "cn" || c.rel === "tw" ? "one" : c.rel === "other" ? "nh" : c.rel})"></span>` : ""}${esc(c.label)} <b>${c.count.toLocaleString()}</b></button>`
       ).join("");
+    }
+    function hkEqTw() {
+      let n = 0;
+      for (const code of Object.keys(D.hk)) for (const x of hkEntries(code)) if (!x.layer && x.ch === D.tw[code]) n++;
+      return n;
     }
     function renderStatTable() {
       const c = D.meta.counts;
@@ -736,6 +785,8 @@
         ["台灣碼表：非漢字碼位（日時符號、標點、拉丁字母）", c.tw - c.twHan],
         ["SWIFT e-CCC 第二版：有字碼位", c.sw],
         ["SWIFT：繁體字與台灣碼同一碼位同字", swStats.eqTw],
+        ["hkhc/ccc：有字碼位 / 字數", [c.hk, c.hkChars].map(n => n.toLocaleString()).join(" / ")],
+        ["hkhc/ccc：基本層（無標記）的字與台灣碼同一碼位同字", hkEqTw()],
         ["兩岸同碼同字 / 繁簡對應 / 異字", [REL_COUNT.same, REL_COUNT.st, REL_COUNT.diff].map(n => n.toLocaleString()).join(" / ")],
         ["僅中國大陸有字 / 僅台灣有字", [REL_COUNT.cn, REL_COUNT.tw].map(n => n.toLocaleString()).join(" / ")],
       ];
