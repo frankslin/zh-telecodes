@@ -178,6 +178,13 @@ def main():
             print(f"note: {name} codes in Unihan but not in NJStar book: {missing[:10]}…")
         nonhan[name] = sorted(extra)
 
+    # Mainland codes missing from both Unihan and NJStar, taken from ChaseDream's
+    # 标准电码本 lookup (apps.chasedream.com/chinese-commercial-code/).
+    for code, ch in {"9994": "-"}.items():
+        assert code not in cn, code
+        cn[code] = ch
+        nonhan["cn"] = sorted(nonhan["cn"] + [code])
+
     sw = read_swift()
     hk = read_hkhc()
 

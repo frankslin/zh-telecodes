@@ -570,6 +570,10 @@
     for (const [code, ch] of Object.entries(D.tw)) addIdx(ch, "tw", code);
     for (const [code, [s, t]] of Object.entries(D.sw)) { addIdx(t, "sw", code); addIdx(s, "sw", code); }
     for (const code of Object.keys(D.hk)) for (const x of hkEntries(code)) addIdx(x.ch, "hk", code);
+    // Extra chars that look up a mainland code directly; code → char lookup still shows D.cn.
+    // 5189: Unihan has 脧 U+8127, ChaseDream / SWIFT have 朘 U+6718; simplified glyphs do not tell 肉月 from 月.
+    const CN_ALIAS = { "朘": "5189" };
+    for (const [ch, code] of Object.entries(CN_ALIAS)) addIdx(ch, "cn", code);
 
     function related(a, b) { return (D.v[a] || "").includes(b) || (D.v[b] || "").includes(a); }
     function relOf(code) {

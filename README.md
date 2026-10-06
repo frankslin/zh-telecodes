@@ -18,12 +18,17 @@
 
 | 碼表 | 來源 | 碼位數 |
 |---|---|---|
-| 中國大陸 | Unicode 18.0 Unihan `kMainlandTelegraph`，加上 NJStar 碼表中的非漢字碼 | 7,078 漢字 + 210 非漢字 |
+| 中國大陸 | Unicode 18.0 Unihan `kMainlandTelegraph`，加上 NJStar 碼表中的非漢字碼及 ChaseDream 補的 9994 | 7,078 漢字 + 211 非漢字 |
 | 台灣 | Unicode 18.0 Unihan `kTaiwanTelegraph`，加上 NJStar 碼表中的非漢字碼 | 9,026 漢字 + 93 非漢字 |
 | SWIFT e-CCC v2 | SWIFT《Chinese Commercial Code》第二版 xlsx（2014 年起由 CCC Maintenance Group 維護） | 9,395 |
 | hkhc/ccc（民間） | [hkhc/ccc](https://github.com/hkhc/ccc) `data/ccc-source-v2.txt`（@920846e，Apache-2.0） | 9,718 碼位、13,012 字 |
 
 - NJStar 碼表由 Unicode 14.0 生成。其中的漢字碼與 Unihan 18.0 逐一比對，完全一致，所以只取它的非漢字碼（月份、注音、字母、標點等），這部分由 Jaemin Chung 整理。
+- 中國大陸表與 [ChaseDream 標準中文電碼查詢](https://apps.chasedream.com/chinese-commercial-code/)（據《標準電碼本（修訂本）》1983 年第 3 版）逐字比對（2026-10）：7,218 字的碼完全相同，沒有同字異碼。差異如下：
+  - **5189**：Unihan 作「脧」U+8127，ChaseDream 與 SWIFT 簡體欄作「朘」U+6718。大陸規範字形中「肉月」與「月」已不區分，紙本上看不出是哪個字，只是錄入時選了不同的碼點。頁面查詢兩字都給出 5189；查電碼 5189 仍顯示「脧」。
+  - **9994**：Unihan 與 NJStar 都缺，ChaseDream 作連字號「-」U+002D，據此補入。
+  - **7016**：Unihan 作「𰾠」U+30FA0，ChaseDream 無此碼（「鑱」「镵」都查不到）。
+  - ChaseDream 另把「鑞」U+945E 也對到 4257（本表只有「镴」）；NJStar 的 68 個月、日、時合字（9701–9712、9800–9824、9901–9931）ChaseDream 未收。
 - 繁簡對應綜合三處來源：Unihan 的 `kSimplifiedVariant` / `kTraditionalVariant`，OpenCC 的 `STCharacters` / `TSCharacters` / `TWVariants` / `HKVariants`，以及 SWIFT 表的繁簡配對。
 
 ### 香港
